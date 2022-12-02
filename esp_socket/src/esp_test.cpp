@@ -81,7 +81,16 @@ void task1(void *params)
 
 	retarget_init();
 
+#if 0	/* HUMIDITY */
 	ModbusMaster node3(241); // Create modbus object that connects to slave id 241 (HMP60)
+	node3.begin(9600); // all nodes must operate at the same speed!
+	node3.idle(idle_delay); // idle function is called while waiting for reply from slave
+	ModbusRegister RH(&node3, 256, true);
+#endif
+	/* CO2
+	 *
+	 */
+	ModbusMaster node3(240); // Create modbus object that connects to slave id 241 (HMP60)
 	node3.begin(9600); // all nodes must operate at the same speed!
 	node3.idle(idle_delay); // idle function is called while waiting for reply from slave
 	ModbusRegister RH(&node3, 256, true);
@@ -116,8 +125,8 @@ void task1(void *params)
 
 		vTaskDelay(2000);
 
-		rh = RH.read()/10.0;
-		snprintf(buffer, 32, "RH=%5.1f%%", rh);
+		rh = RH.read();
+		snprintf(buffer, 32, "CO2=%5.1f%", rh);
 		printf("%s\n",buffer);
 		lcd->setCursor(0, 1);
 		// Print a message to the LCD.
@@ -174,14 +183,14 @@ int main(void) {
 	// Note that in a Cortex-M3 a higher number indicates lower interrupt priority
 	//NVIC_SetPriority( RITIMER_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1 );
 
-//	xTaskCreate(task1, "test",
-//			configMINIMAL_STACK_SIZE * 4, NULL, (tskIDLE_PRIORITY + 1UL),
-//			(TaskHandle_t *) NULL);
+	xTaskCreate(task1, "test",
+			configMINIMAL_STACK_SIZE * 4, NULL, (tskIDLE_PRIORITY + 1UL),
+			(TaskHandle_t *) NULL);
 
-	xTaskCreate(vButtonTask, "Task1", configMINIMAL_STACK_SIZE + 128, NULL,
-				(tskIDLE_PRIORITY + 1), (TaskHandle_t *) NULL);
+//	xTaskCreate(vButtonTask, "Task1", configMINIMAL_STACK_SIZE + 128, NULL,
+//				(tskIDLE_PRIORITY + 1), (TaskHandle_t *) NULL);
 
-//	vStartSimpleMQTTDemo();
+	vStartSimpleMQTTDemo();
 	/* Start the scheduler */
 	vTaskStartScheduler();
 

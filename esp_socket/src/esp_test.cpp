@@ -28,7 +28,8 @@
 #include "ModbusRegister.h"
 #include "DigitalIoPin.h"
 #include "LiquidCrystal.h"
-
+#include <cstring>
+#define EEPROM_TEST 1
 
 static volatile int counter;
 static DigitalIoPin SW1(1,8, DigitalIoPin::input, true);
@@ -160,6 +161,154 @@ extern "C" {
   void vStartSimpleMQTTDemo( void ); // ugly - should be in a header
 }
 
+#if EEPROM_TEST
+/* Systick interrupt rate */
+#define TICKRATE_HZ (10)	/* 10 ticks per second */
+
+/* EEPROM Address used for storage */
+#define EEPROM_ADDRESS      0x00000100
+
+/* Write count */
+#define IAP_NUM_BYTES_TO_READ_WRITE 32
+
+/* Tag for checking if a string already exists in EEPROM */
+#define CHKTAG          "NxP"
+#define CHKTAG_SIZE     3
+
+/* ASCII ESC character code */
+#define ESC_CHAR        27
+
+/* Read/write buffer (32-bit aligned) */
+uint32_t buffer[IAP_NUM_BYTES_TO_READ_WRITE / sizeof(uint32_t)];
+
+/* Test string for no DEBUG */
+#define TESTSTRING "12345678"
+
+/*****************************************************************************
+ * Public types/enumerations/variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Private functions
+ ****************************************************************************/
+
+/* Show current string stored in UART */
+static void ShowString(char *str) {
+	int stSize;
+
+	/* Is data tagged with check pattern? */
+	if (strncmp(str, CHKTAG, CHKTAG_SIZE) == 0) {
+		/* Get next byte, which is the string size in bytes */
+		stSize = (uint32_t) str[3];
+		if (stSize > 32) {
+			stSize = 32;
+		}
+
+		/* Add terminator */
+		str[4 + stSize] = '\0';
+
+		/* Show string stored in EEPROM */
+		DEBUGSTR("Stored string found in EEEPROM\r\n");
+		DEBUGSTR("-->");
+		DEBUGSTR((char *) &str[4]);
+		DEBUGSTR("<--\r\n");
+	}
+	else {
+		DEBUGSTR("No string stored in the EEPROM\r\n");
+	}
+}
+
+/* Get a string to save from the UART */
+static uint32_t MakeString(uint8_t *str, char *strToWrite)
+{
+	int index, byte;
+	char strOut[2];
+
+	/* Setup header */
+	strncpy((char *) str, CHKTAG, CHKTAG_SIZE);
+
+	/* Suppress warnings */
+	(void) byte;
+	(void) strOut;
+
+	/* Debug input not enabled, so use a pre-setup string */
+	strcpy((char *) &str[4], strToWrite);
+	index = strlen(strToWrite);
+
+	str[3] = (uint8_t) index;
+
+	return (uint32_t) index;
+}
+
+/*****************************************************************************
+ * Public functions
+ ****************************************************************************/
+
+/**
+ * @brief	Handle interrupt from SysTick timer
+ * @return	Nothing
+ */
+void SysTick_Handler(void)
+{
+	Board_LED_Toggle(0);
+}
+
+/**
+ * @brief	main routine for EEPROM example
+ * @return	Always returns 0
+ */
+int main(void)
+{
+	uint8_t *ptr = (uint8_t *) buffer;
+	uint8_t ret_code;
+	char *strToWrite = "Test message";
+
+	/* Generic Initialization */
+	SystemCoreClockUpdate();
+	Board_Init();
+
+	/* Enable SysTick Timer */
+	SysTick_Config(SystemCoreClock / TICKRATE_HZ);
+
+	/* Enable EEPROM clock and reset EEPROM controller */
+	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_EEPROM);
+	Chip_SYSCTL_PeriphReset(RESET_EEPROM);
+
+
+/**************************************** WRITE ********************************************/
+	/* Get a string to save */
+	MakeString(ptr, strToWrite);
+
+	/* Data to be written to EEPROM */
+	ret_code = Chip_EEPROM_Write(EEPROM_ADDRESS, ptr, IAP_NUM_BYTES_TO_READ_WRITE);
+	/* Error checking */
+	if (ret_code == IAP_CMD_SUCCESS) {
+		DEBUGSTR("EEPROM write passed\r\n");
+
+	}
+	else {
+		DEBUGOUT("EEPROM write failed, return code is: %x\r\n", ret_code);
+	}
+
+/**************************************** READ ********************************************/
+	/* Data to be read from EEPROM */
+	ret_code = Chip_EEPROM_Read(EEPROM_ADDRESS, ptr, IAP_NUM_BYTES_TO_READ_WRITE);
+
+	/* Error checking */
+	if (ret_code != IAP_CMD_SUCCESS) {
+		DEBUGOUT("Command failed to execute, return code is: %x\r\n", ret_code);
+	}else
+	{
+		/* Check and display string if it exists */
+		ShowString((char *) ptr);
+	}
+
+
+	return 0;
+}
+
+
+#else
 int main(void) {
 
 #if defined (__USE_LPCOPEN)
@@ -197,6 +346,8 @@ int main(void) {
 	/* Should never arrive here */
 	return 1;
 }
+
+#endif
 
 void interrupt_init(void) {
     /* Initialize PININT driver */

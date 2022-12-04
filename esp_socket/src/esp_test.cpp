@@ -28,6 +28,8 @@
 #include "ModbusRegister.h"
 #include "DigitalIoPin.h"
 #include "LiquidCrystal.h"
+#include "EEPROMWrapper.h"
+#include "common_definitions.h"
 #include <cstring>
 #define EEPROM_TEST 1
 
@@ -259,10 +261,6 @@ void SysTick_Handler(void)
  */
 int main(void)
 {
-	uint8_t *ptr = (uint8_t *) buffer;
-	uint8_t ret_code;
-	char *strToWrite = "Test message";
-
 	/* Generic Initialization */
 	SystemCoreClockUpdate();
 	Board_Init();
@@ -270,40 +268,23 @@ int main(void)
 	/* Enable SysTick Timer */
 	SysTick_Config(SystemCoreClock / TICKRATE_HZ);
 
-	/* Enable EEPROM clock and reset EEPROM controller */
-	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_EEPROM);
-	Chip_SYSCTL_PeriphReset(RESET_EEPROM);
+	EEPROM_Wrapper mem;
+	GH_DATA house = {12};
 
 
 /**************************************** WRITE ********************************************/
-	/* Get a string to save */
-	MakeString(ptr, strToWrite);
-
-	/* Data to be written to EEPROM */
-	ret_code = Chip_EEPROM_Write(EEPROM_ADDRESS, ptr, IAP_NUM_BYTES_TO_READ_WRITE);
-	/* Error checking */
-	if (ret_code == IAP_CMD_SUCCESS) {
-		DEBUGSTR("EEPROM write passed\r\n");
-
-	}
-	else {
-		DEBUGOUT("EEPROM write failed, return code is: %x\r\n", ret_code);
-	}
+	// Try to write a structure
+	mem.write_to(EEPROM_ADDRESS, &house, sizeof(GH_DATA));
+	// Write string afterwards
+	mem.write_to(EEPROM_ADDRESS + sizeof(GH_DATA), "Hello from EEPROM");
 
 /**************************************** READ ********************************************/
-	/* Data to be read from EEPROM */
-	ret_code = Chip_EEPROM_Read(EEPROM_ADDRESS, ptr, IAP_NUM_BYTES_TO_READ_WRITE);
+	// Read a structure
+	GH_DATA* new_data = (GH_DATA*)mem.read_from(EEPROM_ADDRESS, sizeof(GH_DATA));
+	// Read a string
+	std::string str = mem.str_read_from(EEPROM_ADDRESS + sizeof(GH_DATA), 256);
 
-	/* Error checking */
-	if (ret_code != IAP_CMD_SUCCESS) {
-		DEBUGOUT("Command failed to execute, return code is: %x\r\n", ret_code);
-	}else
-	{
-		/* Check and display string if it exists */
-		ShowString((char *) ptr);
-	}
-
-
+	DEBUGSTR(str.c_str()); // Prints "Hello from EEPROM"
 	return 0;
 }
 

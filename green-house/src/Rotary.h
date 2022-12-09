@@ -42,6 +42,6 @@ private:
   DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
                              { 0, 5, DigitalIoPin::input, true },
                              { 1, 8, DigitalIoPin::input, true } };
-}
+};
 
 #endif /* ROTARY_H */

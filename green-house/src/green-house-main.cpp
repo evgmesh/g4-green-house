@@ -24,17 +24,16 @@
 #include "EEPROMWrapper.h"
 #include "LiquidCrystal.h"
 #include "ModbusRegister.h"
+#include "Rotary.h"
 #include "common_definitions.h"
 #include <cstring>
 /* Systick interrupt rate */
- #define TICKRATE_HZ (10)	/* 10 ticks per second */
-
+#define TICKRATE_HZ (10) /* 10 ticks per second */
 
 static volatile int counter;
 static DigitalIoPin SW1 (1, 8, DigitalIoPin::input, true);
 static DigitalIoPin SW2 (0, 5, DigitalIoPin::input, true);
 static DigitalIoPin SW3 (0, 6, DigitalIoPin::input, true);
-
 
 static DigitalIoPin sw_a2 (1, 8, DigitalIoPin::pullup, true);
 static DigitalIoPin sw_a3 (0, 5, DigitalIoPin::input, true);
@@ -42,25 +41,16 @@ static DigitalIoPin sw_a4 (0, 6, DigitalIoPin::input, true);
 static DigitalIoPin sw_a5 (0, 7, DigitalIoPin::pullup, true);
 
 static QueueHandle_t queue;
+Rotary *rot;
 
-#ifdef __cplusplus
 extern "C"
 {
-#endif
   void
   PIN_INT0_IRQHandler (void)
   {
-    int data = 0;
-    portBASE_TYPE xHigherPriorityWoken = pdFALSE;
-    sw_a3.read () ? data = -1 : data = 1;
-    xQueueSendToBackFromISR (queue, &data, &xHigherPriorityWoken);
-    Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
-    portEND_SWITCHING_ISR (xHigherPriorityWoken);
+    portEND_SWITCHING_ISR (rot->isr ());
   }
-
-#ifdef __cplusplus
 }
-#endif
 
 void interrupt_init (void);
 
@@ -93,8 +83,8 @@ task_Display (void *params)
   (void)params;
 
   retarget_init ();
-	DigitalIoPin relay (0, 27, DigitalIoPin::output); // CO2 relay
-	relay.write (0);
+  DigitalIoPin relay (0, 27, DigitalIoPin::output); // CO2 relay
+  relay.write (0);
 
 #if 0 /* HUMIDITY */
 	ModbusMaster node3(241); // Create modbus object that connects to slave id 241 (HMP60)
@@ -105,12 +95,12 @@ task_Display (void *params)
   /* CO2
    *
    */
-  ModbusMaster node3 (240); // Create modbus object that connects to slave id 241 (HMP60)
+  ModbusMaster node3 (
+      240); // Create modbus object that connects to slave id 241 (HMP60)
   node3.begin (9600);      // all nodes must operate at the same speed!
   node3.idle (idle_delay); // idle function is called while waiting for reply
                            // from slave
   ModbusRegister RH (&node3, 256, true);
-
 
   DigitalIoPin *rs = new DigitalIoPin (0, 29, DigitalIoPin::output);
   DigitalIoPin *en = new DigitalIoPin (0, 9, DigitalIoPin::output);
@@ -186,6 +176,8 @@ main (void)
 
   EEPROM_Wrapper mem;
   GH_DATA house = { 12 };
+  Rotary * rotor;
+  rot = rotor;
 
 #if 0
   /**************************************** WRITE*********************************************/
@@ -207,8 +199,8 @@ main (void)
 
   heap_monitor_setup ();
 
-//  xTaskCreate (task_Display, "lcd", configMINIMAL_STACK_SIZE * 4, NULL,
-//               (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *)NULL);
+  //  xTaskCreate (task_Display, "lcd", configMINIMAL_STACK_SIZE * 4, NULL,
+  //               (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *)NULL);
 
   xTaskCreate (vButtonTask, "rotary", configMINIMAL_STACK_SIZE + 128, NULL,
                (tskIDLE_PRIORITY + 1), (TaskHandle_t *)NULL);

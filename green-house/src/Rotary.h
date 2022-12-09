@@ -16,15 +16,6 @@
 #include "FreeRTOS.h"
 #include "chip.h"
 
-extern "C"
-{
-  void
-  PIN_INT0_IRQHandler (void)
-  {
-    portEND_SWITCHING_ISR (this->isr ());
-  }
-}
-
 enum
 {
   SIGNAL_ROTATE,
@@ -36,9 +27,9 @@ class Rotary
 public:
   Rotary ();
   ~Rotary ();
+  portBASE_TYPE isr ();
 
 private:
-  portBASE_TYPE isr ();
   DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
                              { 0, 5, DigitalIoPin::input, true },
                              { 1, 8, DigitalIoPin::input, true } };

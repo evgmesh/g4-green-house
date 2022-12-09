@@ -33,7 +33,7 @@ Rotary::isr ()
 {
   portBASE_TYPE xHigherPriorityWoken = pdFALSE;
   int data = 0;
-  sw_a3.read () ? data = -1 : data = 1;
+  //sw_a3.read () ? data = -1 : data = 1;
   // Do something with data
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   return xHigherPriorityWoken;

@@ -1,7 +1,13 @@
 #General build artifacts
 *.mk
+*.slo
+*.lo
+*.obj
 *.o
 *.a
+*.lai
+*.la
+*.lib
 *.elf
 *.hex
 *.axf
@@ -22,6 +28,19 @@
 *.log
 *.su
 
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
 #MDK-ARM
 *.__i
 *.htm
@@ -29,18 +48,20 @@
 *.uvopt
 *.axf
 
-#Eclipse
-.metadata
-
 #Mac
 .DS_Store
 
-.mcuxpressoide_packages_support/
-AzureRTOS_TAD_logs/
-FreeRTOS_TAD_logs/
-Debug/
-Release/
+# Executables
+*.exe
+*.out
+*.app
+/Debug/
+/.metadata/
 
-*.launch
-*.project
+#Eclipse
+.metadata
 
+# MCUXpresso additional folders
+*.settings/
+.mcuexpressoide_package_support/
+.vscode

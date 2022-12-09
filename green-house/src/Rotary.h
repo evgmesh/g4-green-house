@@ -16,6 +16,15 @@
 #include "FreeRTOS.h"
 #include "chip.h"
 
+extern "C"
+{
+  void
+  PIN_INT0_IRQHandler (void)
+  {
+    portEND_SWITCHING_ISR (this->isr ());
+  }
+}
+
 enum
 {
   SIGNAL_ROTATE,

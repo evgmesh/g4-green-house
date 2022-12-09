@@ -1,6 +1,6 @@
 #include "Rotary.h"
 
-Rotary::Rotary ()
+Rotary::Rotary (QueueHandle_t *level_q) : level (150, 1024)
 {
   /* Initialize PININT driver */
   Chip_PININT_Init (LPC_GPIO_PIN_INT);
@@ -24,6 +24,8 @@ Rotary::Rotary ()
   NVIC_ClearPendingIRQ (PIN_INT0_IRQn);
   NVIC_SetPriority (PIN_INT0_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY + 1);
   NVIC_EnableIRQ (PIN_INT0_IRQn);
+
+  _level_q = level_q;
 }
 
 Rotary::~Rotary () {}
@@ -34,7 +36,11 @@ Rotary::isr ()
   portBASE_TYPE xHigherPriorityWoken = pdFALSE;
   // Do something with data
   // For example:
-//  signal[SIGNAL_ROTATE_CLO].read () ? counter.inc() : xQueueReceiveFromISR(queu);
+  signal[SIGNAL_ROTATE_CLO].read () ? level.inc () : level.dec ();
+  int data = level.getCurrent ();
+  BaseType_t isr_sent = xQueueSendFromISR (
+      *_level_q, &data, &xHigherPriorityWoken);
+  assert (isr_sent);
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   return xHigherPriorityWoken;
 }

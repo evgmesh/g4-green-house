@@ -12,10 +12,13 @@
 #ifndef ROTARY_H
 #define ROTARY_H
 
+#include "Counter.h"
 #include "DigitalIoPin.h"
 #include "FreeRTOS.h"
-#include "task.h"
 #include "chip.h"
+#include "task.h"
+#include "queue.h"
+#include <assert.h>
 
 enum
 {
@@ -27,7 +30,7 @@ enum
 class Rotary
 {
 public:
-  Rotary ();
+  Rotary (QueueHandle_t *level_q);
   ~Rotary ();
   portBASE_TYPE isr ();
 
@@ -35,7 +38,8 @@ private:
   DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
                              { 0, 5, DigitalIoPin::input, true },
                              { 1, 8, DigitalIoPin::input, true } };
-
+  Counter level;
+  QueueHandle_t *_level_q;
 };
 
 #endif /* ROTARY_H */

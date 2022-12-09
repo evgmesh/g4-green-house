@@ -136,7 +136,7 @@ task_Display (void *params)
 void
 vButtonTask (void *pvParams)
 {
-  Rotary rotor;
+  Rotary rotor (&queue);
   rot = &rotor;
   queue = xQueueCreate (50, sizeof (int));
   vQueueAddToRegistry (queue, "ButtonsQueue");
@@ -151,8 +151,7 @@ vButtonTask (void *pvParams)
     {
       if (xQueueReceive (queue, &buffer, (TickType_t)5000))
         {
-          counter += buffer;
-          DEBUGOUT ("%d\r\n", counter);
+          DEBUGOUT ("%d\r\n", buffer);
           vTaskDelay (50);
         }
       else
@@ -174,8 +173,6 @@ main (void)
 
   /* Enable SysTick Timer */
   SysTick_Config (SystemCoreClock / TICKRATE_HZ);
-
-
 
 #if 0
   EEPROM_Wrapper mem;

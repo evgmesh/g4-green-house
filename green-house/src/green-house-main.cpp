@@ -26,11 +26,20 @@
 #include "ModbusRegister.h"
 #include "common_definitions.h"
 #include <cstring>
+/* Systick interrupt rate */
+ #define TICKRATE_HZ (10)	/* 10 ticks per second */
+
 
 static volatile int counter;
 static DigitalIoPin SW1 (1, 8, DigitalIoPin::input, true);
 static DigitalIoPin SW2 (0, 5, DigitalIoPin::input, true);
 static DigitalIoPin SW3 (0, 6, DigitalIoPin::input, true);
+
+
+static DigitalIoPin sw_a2 (1, 8, DigitalIoPin::pullup, true);
+static DigitalIoPin sw_a3 (0, 5, DigitalIoPin::input, true);
+static DigitalIoPin sw_a4 (0, 6, DigitalIoPin::input, true);
+static DigitalIoPin sw_a5 (0, 7, DigitalIoPin::pullup, true);
 
 static QueueHandle_t queue;
 
@@ -43,7 +52,7 @@ extern "C"
   {
     int data = 0;
     portBASE_TYPE xHigherPriorityWoken = pdFALSE;
-    SW3.read () ? data = -1 : data = 1;
+    sw_a3.read () ? data = -1 : data = 1;
     xQueueSendToBackFromISR (queue, &data, &xHigherPriorityWoken);
     Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
     portEND_SWITCHING_ISR (xHigherPriorityWoken);
@@ -84,6 +93,8 @@ task_Display (void *params)
   (void)params;
 
   retarget_init ();
+	DigitalIoPin relay (0, 27, DigitalIoPin::output); // CO2 relay
+	relay.write (0);
 
 #if 0 /* HUMIDITY */
 	ModbusMaster node3(241); // Create modbus object that connects to slave id 241 (HMP60)
@@ -94,20 +105,12 @@ task_Display (void *params)
   /* CO2
    *
    */
-  ModbusMaster node3 (
-      240); // Create modbus object that connects to slave id 241 (HMP60)
+  ModbusMaster node3 (240); // Create modbus object that connects to slave id 241 (HMP60)
   node3.begin (9600);      // all nodes must operate at the same speed!
   node3.idle (idle_delay); // idle function is called while waiting for reply
                            // from slave
   ModbusRegister RH (&node3, 256, true);
 
-  DigitalIoPin relay (0, 27, DigitalIoPin::output); // CO2 relay
-  relay.write (0);
-
-  DigitalIoPin sw_a2 (1, 8, DigitalIoPin::pullup, true);
-  DigitalIoPin sw_a3 (0, 5, DigitalIoPin::pullup, true);
-  DigitalIoPin sw_a4 (0, 6, DigitalIoPin::pullup, true);
-  DigitalIoPin sw_a5 (0, 7, DigitalIoPin::pullup, true);
 
   DigitalIoPin *rs = new DigitalIoPin (0, 29, DigitalIoPin::output);
   DigitalIoPin *en = new DigitalIoPin (0, 9, DigitalIoPin::output);
@@ -184,8 +187,8 @@ main (void)
   EEPROM_Wrapper mem;
   GH_DATA house = { 12 };
 
-  /**************************************** WRITE
-   * ********************************************/
+#if 0
+  /**************************************** WRITE*********************************************/
   // Try to write a structure
   mem.write_to (EEPROM_ADDRESS, &house, sizeof (GH_DATA));
   // Write string afterwards
@@ -200,20 +203,12 @@ main (void)
   std::string str = mem.str_read_from (EEPROM_ADDRESS + sizeof (GH_DATA), 256);
 
   DEBUGSTR (str.c_str ()); // Prints "Hello from EEPROM"
+#endif
 
   heap_monitor_setup ();
 
-  // initialize RIT (= enable clocking etc.)
-  // Chip_RIT_Init(LPC_RITIMER);
-  // set the priority level of the interrupt
-  // The level must be equal or lower than the maximum priority specified in
-  // FreeRTOS config Note that in a Cortex-M3 a higher number indicates lower
-  // interrupt priority
-  // NVIC_SetPriority( RITIMER_IRQn,
-  // configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1 );
-
-  xTaskCreate (task_Display, "lcd", configMINIMAL_STACK_SIZE * 4, NULL,
-               (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *)NULL);
+//  xTaskCreate (task_Display, "lcd", configMINIMAL_STACK_SIZE * 4, NULL,
+//               (tskIDLE_PRIORITY + 1UL), (TaskHandle_t *)NULL);
 
   xTaskCreate (vButtonTask, "rotary", configMINIMAL_STACK_SIZE + 128, NULL,
                (tskIDLE_PRIORITY + 1), (TaskHandle_t *)NULL);
@@ -237,12 +232,13 @@ interrupt_init (void)
   Chip_SYSCTL_PeriphReset (RESET_PININT);
 
   /* Configure interrupt channel for the GPIO pin in INMUX block */
-  Chip_INMUX_PinIntSel (0, 0, 5);
+  Chip_INMUX_PinIntSel (0, 0, 6);
 
   /* Configure channel interrupt as edge sensitive and falling edge interrupt*/
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   Chip_PININT_SetPinModeEdge (LPC_GPIO_PIN_INT, PININTCH (0));
   Chip_PININT_EnableIntLow (LPC_GPIO_PIN_INT, PININTCH (0));
+  Chip_PININT_DisableIntHigh (LPC_GPIO_PIN_INT, PININTCH (0));
 
   /* Enable interrupt in the NVIC */
   NVIC_ClearPendingIRQ (PIN_INT0_IRQn);

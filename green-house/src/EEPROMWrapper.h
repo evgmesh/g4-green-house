@@ -11,6 +11,8 @@
 #include "chip.h"
 #include <assert.h>
 #include <string>
+ /* EEPROM Address used for storage */
+ #define EEPROM_ADDRESS      0x00000100
 
 typedef void (*IAP_call) (uint32_t[], uint32_t[]);
 

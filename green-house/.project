@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>esp_socket</name>
+	<name>green-house</name>
 	<comment></comment>
 	<projects>
 		<project>lpc_board_nxp_lpcxpresso_1549</project>

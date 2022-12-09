@@ -59,7 +59,7 @@ EEPROM_Wrapper::eeprom_use (uint8_t *data, uint32_t addr, uint32_t size,
   /* Main execution of eeprom r/w */
   eeprom_execute (&rom);
 #if INCLUDE_vTaskSuspend
-  vTaskResumeAll ();
+  xTaskResumeAll ();
 #endif
   assert (result[0] == IAP_CMD_SUCCESS);
 }

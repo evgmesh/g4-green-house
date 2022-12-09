@@ -9,6 +9,7 @@
 #define EEPROMWRAPPER_H_
 
 #include "FreeRTOS.h"
+#include "task.h"
 #include "chip.h"
 #include <assert.h>
 #include <string>

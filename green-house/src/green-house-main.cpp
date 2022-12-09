@@ -41,7 +41,7 @@ static DigitalIoPin sw_a4 (0, 6, DigitalIoPin::input, true);
 static DigitalIoPin sw_a5 (0, 7, DigitalIoPin::pullup, true);
 
 static QueueHandle_t queue;
-Rotary *rot;
+static Rotary *rot;
 
 extern "C"
 {
@@ -136,7 +136,8 @@ task_Display (void *params)
 void
 vButtonTask (void *pvParams)
 {
-
+  Rotary rotor;
+  rot = &rotor;
   queue = xQueueCreate (50, sizeof (int));
   vQueueAddToRegistry (queue, "ButtonsQueue");
   counter = 10;
@@ -174,12 +175,11 @@ main (void)
   /* Enable SysTick Timer */
   SysTick_Config (SystemCoreClock / TICKRATE_HZ);
 
-  EEPROM_Wrapper mem;
-  GH_DATA house = { 12 };
-  Rotary * rotor;
-  rot = rotor;
+
 
 #if 0
+  EEPROM_Wrapper mem;
+  GH_DATA house = { 12 };
   /**************************************** WRITE*********************************************/
   // Try to write a structure
   mem.write_to (EEPROM_ADDRESS, &house, sizeof (GH_DATA));

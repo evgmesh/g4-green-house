@@ -14,11 +14,13 @@
 
 #include "DigitalIoPin.h"
 #include "FreeRTOS.h"
+#include "task.h"
 #include "chip.h"
 
 enum
 {
-  SIGNAL_ROTATE,
+  SIGNAL_ROTATE_CLO,
+  SIGNAL_ROTATE_CCLO,
   SIGNAL_PRESS
 };
 
@@ -33,6 +35,7 @@ private:
   DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
                              { 0, 5, DigitalIoPin::input, true },
                              { 1, 8, DigitalIoPin::input, true } };
+
 };
 
 #endif /* ROTARY_H */

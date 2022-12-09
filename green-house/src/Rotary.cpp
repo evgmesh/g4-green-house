@@ -12,7 +12,7 @@ Rotary::Rotary ()
   Chip_SYSCTL_PeriphReset (RESET_PININT);
 
   /* Configure interrupt channel for the GPIO pin in INMUX block */
-  Chip_INMUX_PinIntSel (0, 0, 6);
+  Chip_INMUX_PinIntSel (0, 0, 5);
 
   /* Configure channel interrupt as edge sensitive and falling edge interrupt*/
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
@@ -32,9 +32,9 @@ portBASE_TYPE
 Rotary::isr ()
 {
   portBASE_TYPE xHigherPriorityWoken = pdFALSE;
-  int data = 0;
-  //sw_a3.read () ? data = -1 : data = 1;
   // Do something with data
+  // For example:
+//  signal[SIGNAL_ROTATE_CLO].read () ? counter.inc() : xQueueReceiveFromISR(queu);
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   return xHigherPriorityWoken;
 }

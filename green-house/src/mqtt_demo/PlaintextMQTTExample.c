@@ -475,6 +475,10 @@ vMQTTDemoTask (void *pvParameters)
       LogInfo (("Short delay before starting the next iteration.... \r\n"));
       vTaskDelay (mqttexampleDELAY_BETWEEN_DEMO_ITERATIONS);
     }
+  /* getting rid of warning: warning: variable 'xMQTTStatus' and 'xNetworkStatus'
+   * set but not used [-Wunused-but-set-variable] */
+  (void) xMQTTStatus;
+  (void) xNetworkStatus;
 }
 /*-----------------------------------------------------------*/
 
@@ -591,6 +595,8 @@ prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
       = MQTT_Connect (pxMQTTContext, &xConnectInfo, NULL,
                       mqttexampleCONNACK_RECV_TIMEOUT_MS, &xSessionPresent);
   configASSERT (xResult == MQTTSuccess);
+  /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
+  (void) xResult;
 }
 /*-----------------------------------------------------------*/
 
@@ -613,6 +619,8 @@ prvUpdateSubAckStatus (MQTTPacketInfo_t *pxPacketInfo)
       xTopicFilterContext[ulTopicCount].xSubAckStatus
           = pucPayload[ulTopicCount];
     }
+  /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
+  (void) xResult;
 }
 /*-----------------------------------------------------------*/
 
@@ -725,6 +733,8 @@ prvMQTTSubscribeWithBackoffRetries (MQTTContext_t *pxMQTTContext)
     }
   while ((xFailedSubscribeToTopic == true)
          && (xBackoffAlgStatus == BackoffAlgorithmSuccess));
+  /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
+  (void) xResult;
 }
 /*-----------------------------------------------------------*/
 
@@ -763,6 +773,8 @@ prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext)
   xResult = MQTT_Publish (pxMQTTContext, &xMQTTPublishInfo, 0U);
 
   configASSERT (xResult == MQTTSuccess);
+  /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
+  (void) xResult;
 }
 /*-----------------------------------------------------------*/
 
@@ -794,6 +806,8 @@ prvMQTTUnsubscribeFromTopic (MQTTContext_t *pxMQTTContext)
                               usUnsubscribePacketIdentifier);
 
   configASSERT (xResult == MQTTSuccess);
+  /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
+  (void) xResult;
 }
 /*-----------------------------------------------------------*/
 

@@ -68,7 +68,7 @@ vDisplayTask (void *pvParams)
       vTaskDelay (2000);
 
       rh = RH.read ();
-      snprintf (buffer, 32, "CO2=%5.1f%", rh);
+      snprintf (buffer, 32, "CO2=%5.1f", rh);
       printf ("%s\n", buffer);
       lcd->setCursor (0, 1);
       // Print a message to the LCD.

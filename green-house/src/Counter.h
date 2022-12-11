@@ -8,20 +8,22 @@
 #ifndef COUNTER_H_
 #define COUNTER_H_
 
-class Counter
+template <class CounterDataType> class Counter
 {
 
 public:
-  Counter (unsigned int i, unsigned int up);
+  Counter (CounterDataType lower_boundary, CounterDataType upper_boundary,
+           CounterDataType step);
   void inc ();
   void dec ();
-  unsigned int getCurrent ();
-  void setInit (unsigned int i);
+  CounterDataType getCurrent ();
+  void setCurrent (CounterDataType num);
   ~Counter () = default;
 
 private:
-  unsigned int init;
-  unsigned int up_lim;
-  unsigned int down_lim;
+  CounterDataType init;
+  CounterDataType up_lim;
+  CounterDataType down_lim;
+  CounterDataType step;
 };
 #endif /* COUNTER_H_ */

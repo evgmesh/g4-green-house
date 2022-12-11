@@ -1,60 +1,68 @@
 #include "Counter.h"
 
+template <class CounterDataType>
 void
-Counter::inc ()
+Counter<CounterDataType>::inc ()
 {
-  if (init < up_lim)
+  if (init + step <= up_lim)
     {
-      ++init;
+      init += step;
     }
 }
 
+template <class CounterDataType>
 void
-Counter::dec ()
+Counter<CounterDataType>::dec ()
 {
-  if (init > down_lim)
+  if (init - step >= down_lim)
     {
-      --init;
+      init -= step;
     }
 }
 
-unsigned int
-Counter::getCurrent ()
+template <class CounterDataType>
+CounterDataType
+Counter<CounterDataType>::getCurrent ()
 {
   return this->init;
 }
 
-Counter::Counter (unsigned int down, unsigned int up)
+template <class CounterDataType>
+Counter<CounterDataType>::Counter (CounterDataType lower_boundary,
+                                   CounterDataType upper_boundary,
+                                   CounterDataType step)
 {
-  up_lim = up;
-  down_lim = down;
-  if (down > up)
+  up_lim = upper_boundary;
+  down_lim = lower_boundary;
+  step = step;
+  if (down_lim > up_lim)
     {
-      init = up;
+      init = up_lim;
     }
-  else if (down < 0)
+  else if (down_lim < 0)
     {
       init = 0;
     }
   else
     {
-      init = down;
+      init = down_lim;
     }
 }
 
+template <class CounterDataType>
 void
-Counter::setInit (unsigned int newInit)
+Counter<CounterDataType>::setCurrent (CounterDataType num)
 {
-  if (newInit > up_lim)
+  if (num > up_lim)
     {
       init = up_lim;
     }
-  else if (newInit < down_lim)
+  else if (num < down_lim)
     {
       init = down_lim;
     }
   else
     {
-      init = newInit;
+      init = num;
     }
 }

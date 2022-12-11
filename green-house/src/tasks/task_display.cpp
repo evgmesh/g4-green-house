@@ -36,42 +36,20 @@ void
 vDisplayTask (void *pvParams)
 {
   retarget_init ();
-  DigitalIoPin relay (0, 27, DigitalIoPin::output); // CO2 relay
-  relay.write (0);
-
-#if 0 /* HUMIDITY */
-		ModbusMaster node3(241); // Create modbus object that connects to slave id 241 (HMP60)
-		node3.begin(9600); // all nodes must operate at the same speed!
-		node3.idle(idle_delay); // idle function is called while waiting for reply from slave
-		ModbusRegister RH(&node3, 256, true);
-#endif
-  /* CO2
-   *
-   */
-  ModbusMaster node3 (
-      240); // Create modbus object that connects to slave id 241 (HMP60)
-  node3.begin (9600);      // all nodes must operate at the same speed!
-  node3.idle (idle_delay); // idle function is called while waiting for reply
-                           // from slave
+  DigitalIoPin relay (0, 27, DigitalIoPin::output);
+  ModbusMaster node3 (240);
+  node3.begin (9600);
+  node3.idle (idle_delay);
   ModbusRegister RH (&node3, 256, true);
-
+  relay.write (0);
   LiquidCrystal *lcd = createLCD ();
 
-  // Print a message to the LCD.
-  lcd->print ("MQTT_FreeRTOS");
-
+  int rotary_action;
   while (true)
     {
-      float rh;
-      char buffer[32];
-
+      if (xQueueReceive (queue, &rotary_action, (TickType_t)5000))
+        {
+        }
       vTaskDelay (2000);
-
-      rh = RH.read ();
-      snprintf (buffer, 32, "CO2=%5.1f", rh);
-      printf ("%s\n", buffer);
-      lcd->setCursor (0, 1);
-      // Print a message to the LCD.
-      lcd->print (buffer);
     }
 }

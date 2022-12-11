@@ -34,12 +34,11 @@ portBASE_TYPE
 Rotary::isr ()
 {
   portBASE_TYPE xHigherPriorityWoken = pdFALSE;
-  // Do something with data
-  // For example:
-  signal[SIGNAL_ROTATE_CLO].read () ? level.inc () : level.dec ();
-  int data = level.getCurrent ();
-  BaseType_t isr_sent = xQueueSendFromISR (
-      *_level_q, &data, &xHigherPriorityWoken);
+  uint8_t data;
+  signal[SIGNAL_ROTATE_CLO].read () ? data = ROTARY_CLOCKWISE
+                                    : data = ROTARY_CCLOCKWISE;
+  BaseType_t isr_sent
+      = xQueueSendFromISR (*_level_q, &data, &xHigherPriorityWoken);
   assert (isr_sent);
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   return xHigherPriorityWoken;

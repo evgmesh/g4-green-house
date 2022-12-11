@@ -11,9 +11,9 @@
 #include "Counter.h"
 #include "LiquidCrystal.h"
 #include "Menu/MenuObjEvent.h"
-#include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 enum
 {
@@ -38,7 +38,7 @@ typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
 class MenuObj
 {
 public:
-  MenuObj (LiquidCrystal *lcd);
+  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm);
   virtual ~MenuObj ();
 
   /** Handle the given event of the current MenuObj
@@ -52,7 +52,7 @@ private:
   obj_pointer current;
   LiquidCrystal *_lcd;
   char lcd_line[2][16] = { { 0 }, { 0 } };
-  Counter<uint16_t> *ppm;
+  Counter<uint16_t> *_ppm;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);

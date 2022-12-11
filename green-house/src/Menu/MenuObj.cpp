@@ -7,9 +7,10 @@
 
 #include <Menu/MenuObj.h>
 
-MenuObj::MenuObj (LiquidCrystal *lcd)
+MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 {
   _lcd = lcd;
+  _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
@@ -79,11 +80,11 @@ MenuObj::ObjSetPPM (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], ppm->getCurrent ());
+      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], _ppm->getCurrent ());
       SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS], ppm->getCurrent ());
+      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
       break;
@@ -105,14 +106,21 @@ MenuObj::ObjChangePPMValue (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CHANGE_PPM], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eUnFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjSetPPM);
       break;
     case MenuObjEvent::eRollClockWise:
+      _ppm->inc ();
+      SetLineToFMT (1, MENU_OBJ_LINES[CHANGE_PPM], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eRollCClockWise:
+      _ppm->dec ();
+      SetLineToFMT (1, MENU_OBJ_LINES[CHANGE_PPM], _ppm->getCurrent ());
       break;
     default:
       break;

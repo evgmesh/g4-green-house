@@ -10,6 +10,23 @@
 
 #include "LiquidCrystal.h"
 #include "Menu/MenuObjEvent.h"
+#include <string.h>
+
+enum
+{
+  CO2_FOCUS,
+  CO2_UNFOCUS,
+  SET_PPM_FOCUS,
+  SET_PPM_UNFOCUS,
+  BACK_UNFOCUS_SAVE_UNFOCUS,
+  BACK_FOCUS_SAVE_UNFOCUS,
+  BACK_UNFOCUS_SAVE_FOCUS
+};
+
+const char *MENU_OBJ_LINES[]
+    = { "[SET CO2 LVL]",   " SET CO2 LVL ",   " SET [%4d] PPM ",
+        " SET  %4d  PPM ", " BACK     SAVE ", "[BACK]    SAVE ",
+        " BACK    [SAVE]" };
 
 class MenuObj;
 typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
@@ -30,8 +47,8 @@ private:
   /* Variables and objects */
   obj_pointer current;
   LiquidCrystal *_lcd;
-  char lcd_line_1[16] = { 0 };
-  char lcd_line_2[16] = { 0 };
+  char lcd_line[2][16] = { { 0 }, { 0 } };
+  void setLineTo (uint8_t line, const char *to);
 
   /* Methods */
   void SetEvent (obj_pointer newevent);

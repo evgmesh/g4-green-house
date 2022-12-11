@@ -15,7 +15,6 @@
 #include "DigitalIoPin.h"
 #include "FreeRTOS.h"
 #include "chip.h"
-#include "common_values.h"
 #include "queue.h"
 #include "task.h"
 #include <assert.h>

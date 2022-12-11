@@ -1,6 +1,6 @@
 #include "Rotary.h"
 
-Rotary::Rotary (QueueHandle_t *level_q) : level (150, 1024)
+Rotary::Rotary (QueueHandle_t *level_q)
 {
   /* Initialize PININT driver */
   Chip_PININT_Init (LPC_GPIO_PIN_INT);
@@ -31,15 +31,30 @@ Rotary::Rotary (QueueHandle_t *level_q) : level (150, 1024)
 Rotary::~Rotary () {}
 
 portBASE_TYPE
-Rotary::isr ()
+Rotary::rotate_isr ()
 {
   portBASE_TYPE xHigherPriorityWoken = pdFALSE;
   uint8_t data;
-  signal[SIGNAL_ROTATE_CLO].read () ? data = ROTARY_CLOCKWISE
-                                    : data = ROTARY_CCLOCKWISE;
-  BaseType_t isr_sent
-      = xQueueSendFromISR (*_level_q, &data, &xHigherPriorityWoken);
-  assert (isr_sent);
+  signal[ROTARY_ACTION::ROTARY_CLOCKWISE].read ()
+      ? data = ROTARY_ACTION::ROTARY_CLOCKWISE
+      : data = ROTARY_ACTION::ROTARY_CCLOCKWISE;
+  sendActionAndAssertQueue (&data, &xHigherPriorityWoken);
   Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (0));
   return xHigherPriorityWoken;
+}
+
+portBASE_TYPE
+Rotary::press_isr ()
+{
+  portBASE_TYPE xHigherPriorityWoken = pdFALSE;
+  uint8_t data = ROTARY_ACTION::ROTARY_PRESS;
+  sendActionAndAssertQueue (&data, &xHigherPriorityWoken);
+  Chip_PININT_ClearIntStatus (LPC_GPIO_PIN_INT, PININTCH (1));
+  return xHigherPriorityWoken;
+}
+
+inline void
+Rotary::sendActionAndAssertQueue (uint8_t *data, BaseType_t *const pxHPW)
+{
+  assert (xQueueSendFromISR (*_level_q, data, pxHPW));
 }

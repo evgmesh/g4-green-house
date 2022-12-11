@@ -26,9 +26,8 @@ public:
     /** Rotary counter clockwise */
     eRollCClockWise,
   };
-  MenuObjEvent (eventType e = eFocus, int val = 0) : type (e), value (val){};
+  MenuObjEvent (eventType e = eFocus) : type (e){};
   eventType type;
-  int value;
 };
 
 

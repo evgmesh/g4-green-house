@@ -34,9 +34,18 @@ MenuObj::SetEvent (obj_pointer newevent)
 }
 
 inline void
-MenuObj::setLineTo (uint8_t line, const char *to)
+MenuObj::SetLineToConst (uint8_t line, const char *to)
 {
   memcpy (lcd_line[line - 1], to, 16);
+}
+
+void
+MenuObj::SetLineToFMT (uint8_t line, const char *fmt, ...)
+{
+  va_list args;
+  va_start (args, fmt);
+  vsnprintf (lcd_line[line - 1], 16, fmt, args);
+  va_end (args);
 }
 
 void
@@ -45,10 +54,10 @@ MenuObj::ObjSetCOLevel (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      setLineTo (1, MENU_OBJ_LINES[CO2_FOCUS]);
+      SetLineToConst (1, MENU_OBJ_LINES[CO2_FOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      setLineTo (1, MENU_OBJ_LINES[CO2_UNFOCUS]);
+      SetLineToConst (1, MENU_OBJ_LINES[CO2_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
       SetEvent (&MenuObj::ObjSetPPM);
@@ -70,11 +79,11 @@ MenuObj::ObjSetPPM (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      setLineTo (1, MENU_OBJ_LINES[SET_PPM_FOCUS]);
-      setLineTo (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
+      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], ppm->getCurrent ());
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      setLineTo (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS]);
+      SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS], ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
       break;
@@ -91,15 +100,35 @@ MenuObj::ObjSetPPM (const MenuObjEvent &event)
 }
 
 void
+MenuObj::ObjChangePPMValue (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      break;
+    default:
+      break;
+    }
+}
+
+void
 MenuObj::ObjBack (const MenuObjEvent &event)
 {
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      setLineTo(2, MENU_OBJ_LINES[BACK_FOCUS_SAVE_UNFOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_FOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      setLineTo (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
       SetEvent (&MenuObj::ObjSetCOLevel);
@@ -121,10 +150,10 @@ MenuObj::ObjSave (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      setLineTo (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_FOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_FOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      setLineTo (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
       // TODO Save to EEPROM

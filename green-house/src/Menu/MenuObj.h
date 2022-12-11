@@ -8,9 +8,12 @@
 #ifndef MENU_MENUOBJ_H_
 #define MENU_MENUOBJ_H_
 
+#include "Counter.h"
 #include "LiquidCrystal.h"
 #include "Menu/MenuObjEvent.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 enum
 {
@@ -18,15 +21,16 @@ enum
   CO2_UNFOCUS,
   SET_PPM_FOCUS,
   SET_PPM_UNFOCUS,
+  CHANGE_PPM,
   BACK_UNFOCUS_SAVE_UNFOCUS,
   BACK_FOCUS_SAVE_UNFOCUS,
   BACK_UNFOCUS_SAVE_FOCUS
 };
 
 const char *MENU_OBJ_LINES[]
-    = { "[SET CO2 LVL]",   " SET CO2 LVL ",   " SET [%4d] PPM ",
-        " SET  %4d  PPM ", " BACK     SAVE ", "[BACK]    SAVE ",
-        " BACK    [SAVE]" };
+    = { "[SET CO2 LVL]",   " SET CO2 LVL ",  "SET [%4d] PPM",
+        "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
+        "[BACK]    SAVE ", " BACK    [SAVE]" };
 
 class MenuObj;
 typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
@@ -48,10 +52,12 @@ private:
   obj_pointer current;
   LiquidCrystal *_lcd;
   char lcd_line[2][16] = { { 0 }, { 0 } };
-  void setLineTo (uint8_t line, const char *to);
+  Counter<uint16_t> *ppm;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);
+  void SetLineToConst (uint8_t line, const char *to);
+  void SetLineToFMT (uint8_t line, const char *fmt, ...);
 
   /** Set CO2 level
    *
@@ -64,6 +70,12 @@ private:
    * @param event event of the state
    */
   void ObjSetPPM (const MenuObjEvent &event);
+
+  /** Change PPM Value
+   *
+   * @param event event of the state
+   */
+  void ObjChangePPMValue (const MenuObjEvent &event);
 
   /** Back
    *

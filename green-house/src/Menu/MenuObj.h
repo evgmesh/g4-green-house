@@ -47,6 +47,7 @@ public:
    */
   void HandleObj (const MenuObjEvent &event);
 
+
 private:
   /* Variables and objects */
   obj_pointer current;

@@ -79,7 +79,15 @@ extern void vLoggingPrintf( const char * pcFormatString,
  *
  * #define democonfigCLIENT_IDENTIFIER				"insert here."
  */
-#define democonfigCLIENT_IDENTIFIER				"ESP-MQTT-01"
+#define democonfigCLIENT_IDENTIFIER				"Group4_implementation"
+
+/**
+ * @brief The topic to subscribe and publish to in the example.
+ *
+ * The topic name starts with the client identifier to ensure that each demo
+ * interacts with a unique topic name.
+ */
+#define mqttexampleTOPIC democonfigCLIENT_IDENTIFIER "/group4/topic"
 
 /**
  * @brief MQTT broker end point to connect to.
@@ -89,7 +97,7 @@ extern void vLoggingPrintf( const char * pcFormatString,
  *
  * #define democonfigMQTT_BROKER_ENDPOINT				"insert here."
  */
-#define democonfigMQTT_BROKER_ENDPOINT				"192.168.1.254"
+#define democonfigMQTT_BROKER_ENDPOINT				"192.168.100.13"
 
 /**
  * @brief The port to use for the demo.
@@ -108,8 +116,8 @@ extern void vLoggingPrintf( const char * pcFormatString,
 
 
 #if 1
-#define WIFI_SSID	    "SmartIotMQTT"
-#define WIFI_PASS       "SmartIot"
+#define WIFI_SSID	    "Kotiboksi_64EE"
+#define WIFI_PASS       "24C622949E993"
 #endif
 
 #endif /* DEMO_CONFIG_H */

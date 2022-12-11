@@ -16,6 +16,6 @@
  * @param[in] pvParameters Parameters as passed at the time of task creation.
  * Not used in this example.
  */
-void vMQTTDemoTask (void *pvParameters);
+//void vMQTTDemoTask (void *pvParameters);
 
 #endif /* TASKS_TASK_MQTT_DEMO_H_ */

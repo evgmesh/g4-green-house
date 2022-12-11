@@ -10,6 +10,19 @@
 
 #include "common_values.h"
 #include "tasks/green-house_tasks.h"
+#include "mqtt.h"
+
+void vMQTTTask (void *pvParameters) {
+	std::string topic("Please, print something!");
+	std::string message("Please, print something!");
+	mqtt mqtt;
+	mqtt.publish(topic, message);
+
+	while(true) {
+		vTaskDelay(1000);
+	}
+}
+
 
 int
 main (void)
@@ -30,8 +43,8 @@ main (void)
   xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
-//  xTaskCreate (vMQTTDemoTask, "MQTTDemoTask", democonfigDEMO_STACKSIZE, NULL,
-//               displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
+  xTaskCreate (vMQTTTask, "MQTTTask", democonfigDEMO_STACKSIZE, NULL,
+               displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   /* Start the scheduler */
   vTaskStartScheduler ();

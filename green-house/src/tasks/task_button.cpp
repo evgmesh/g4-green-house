@@ -7,14 +7,19 @@
 
 #include "green-house_tasks.h"
 
-Rotary *rot;
+Rotary * rot;
 
 extern "C"
 {
   void
   PIN_INT0_IRQHandler (void)
   {
-    portEND_SWITCHING_ISR (rot->isr ());
+    portEND_SWITCHING_ISR (rot->rotate_isr ());
+  }
+  void
+  PIN_INT1_IRQHandler (void)
+  {
+    portEND_SWITCHING_ISR (rot->press_isr ());
   }
 }
 
@@ -23,7 +28,7 @@ vButtonTask (void *pvParams)
 {
   Rotary rotor (&queue);
   rot = &rotor;
-  queue = xQueueCreate (50, sizeof (int));
+  queue = xQueueCreate (100, sizeof (uint8_t));
   vQueueAddToRegistry (queue, "ButtonsQueue");
 
   /* Make DEBUGOUT work - include retarget_uart*/

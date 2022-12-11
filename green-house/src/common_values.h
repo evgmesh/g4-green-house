@@ -39,15 +39,8 @@ typedef struct _green_house
 /* Common defines */
 #define TICKRATE_HZ (10) /* 10 ticks per second */
 
-/* Rotary action enumeration */
-enum ROTARY_ACTION{
-  ROTARY_PRESS,
-  ROTARY_CLOCKWISE,
-  ROTARY_CCLOCKWISE
-};
-
 /* global variables */
 extern QueueHandle_t queue;
-extern Rotary *rot;
+extern Rotary * rot;
 
 #endif /* COMMON_VALUES_H_ */

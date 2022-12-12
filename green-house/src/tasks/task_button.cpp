@@ -30,7 +30,7 @@ vButtonTask (void *pvParams)
   rot = &rotor;
   queue = xQueueCreate (100, sizeof (RotaryAction));
   vQueueAddToRegistry (queue, "ButtonsQueue");
-
-  while (true)
-    ;
+  while(true) {
+	  vTaskDelay(2000);
+  }
 }

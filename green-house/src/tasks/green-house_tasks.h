@@ -10,6 +10,7 @@
 
 #include "common_values.h"
 #include "Menu/MenuObj.h"
+#include "Relay.h"
 extern "C"
 {
 #include "task_mqtt_demo.h"
@@ -26,5 +27,10 @@ void vButtonTask (void *pvParams);
 #define displayTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 4)
 #define displayTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
 void vDisplayTask (void *pvParams);
+
+/* RELAY TASK DEFINES */
+#define relayTASK_STACKSIZE (configMINIMAL_STACK_SIZE + 128)
+#define relayTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+void vRelayTask (void *pvParams);
 
 #endif /* GREEN_HOUSE_TASKS_H_ */

@@ -35,7 +35,7 @@ vButtonTask (void *pvParams)
       if (xQueueReceive (queue, &buffer, (TickType_t)5000))
         {
           DEBUGOUT ("%d\r\n", buffer);
-          vTaskDelay (50);
+//          vTaskDelay (50);
         }
     }
 }

@@ -31,7 +31,6 @@ extern "C" {
 #include "mqtt_demo/using_plaintext.h"
 
 }
-#include "tasks/task_mqtt_demo.h"
 
 /*-----------------------------------------------------------*/
 

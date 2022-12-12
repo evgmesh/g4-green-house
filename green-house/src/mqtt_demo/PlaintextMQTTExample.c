@@ -67,8 +67,6 @@
 /* Transport interface include. */
 #include "using_plaintext.h"
 
-#include "tasks/task_mqtt_demo.h"
-
 /*-----------------------------------------------------------*/
 
 /* Compile time error for undefined configs. */

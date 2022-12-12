@@ -9,6 +9,7 @@
 #define GREEN_HOUSE_TASKS_H_
 
 #include "common_values.h"
+#include "Menu/MenuObj.h"
 extern "C"
 {
 #include "task_mqtt_demo.h"

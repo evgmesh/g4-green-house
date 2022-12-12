@@ -5,8 +5,7 @@
  *      Author: tylen
  */
 #include "green-house_tasks.h"
-#include "Menu/MenuObj.h"
-#include "Counter.h"
+
 
 static void
 idle_delay ()
@@ -45,8 +44,7 @@ vDisplayTask (void *pvParams)
   ModbusRegister RH (&node3, 256, true);
   relay.write (0);
   LiquidCrystal *lcd = createLCD ();
-  Counter<uint16_t> ppm(150, 1024, 20);
-  MenuObj menu(lcd, &ppm);
+  MenuObj menu(lcd, new Counter<uint16_t>(150, 1024, 20));
 
   int rotary_action;
   while (true)

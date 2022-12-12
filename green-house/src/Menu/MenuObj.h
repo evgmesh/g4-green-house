@@ -5,15 +5,15 @@
  *      Author: tylen
  */
 
-#ifndef MENU_MENUOBJ_H_
-#define MENU_MENUOBJ_H_
-
 #include "Counter.h"
 #include "LiquidCrystal.h"
-#include "Menu/MenuObjEvent.h"
+#include "MenuObjEvent.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifndef MENU_MENUOBJ_H_
+#define MENU_MENUOBJ_H_
 
 enum
 {
@@ -26,11 +26,6 @@ enum
   BACK_FOCUS_SAVE_UNFOCUS,
   BACK_UNFOCUS_SAVE_FOCUS
 };
-
-const char *MENU_OBJ_LINES[]
-    = { "[SET CO2 LVL]",   " SET CO2 LVL ",  "SET [%4d] PPM",
-        "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
-        "[BACK]    SAVE ", " BACK    [SAVE]" };
 
 class MenuObj;
 typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);

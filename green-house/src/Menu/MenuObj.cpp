@@ -5,7 +5,13 @@
  *      Author: tylen
  */
 
-#include <Menu/MenuObj.h>
+#include "MenuObj.h"
+
+const char *MENU_OBJ_LINES[]
+    = { "[SET CO2 LVL]",   " SET CO2 LVL ",  "SET [%4d] PPM",
+        "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
+        "[BACK]    SAVE ", " BACK    [SAVE]" };
+
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 {

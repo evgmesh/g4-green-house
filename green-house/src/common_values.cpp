@@ -9,5 +9,6 @@
 
 /* global variables */
 QueueHandle_t queue;
+QueueHandle_t set_point_queue;
 
 

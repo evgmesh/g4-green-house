@@ -28,6 +28,9 @@ main (void)
   xTaskCreate (vButtonTask, "Rotary", buttonTASK_STACKSIZE, NULL,
                buttonTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
+  xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
+               relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
+
   xTaskCreate (vMQTTDemoTask, "MQTTDemoTask", democonfigDEMO_STACKSIZE, NULL,
                displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 

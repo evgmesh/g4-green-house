@@ -7,7 +7,7 @@
 
 #include "green-house_tasks.h"
 
-Rotary * rot;
+Rotary *rot;
 
 extern "C"
 {
@@ -31,16 +31,6 @@ vButtonTask (void *pvParams)
   queue = xQueueCreate (100, sizeof (RotaryAction));
   vQueueAddToRegistry (queue, "ButtonsQueue");
 
-  /* Make DEBUGOUT work - include retarget_uart*/
-  retarget_init ();
-
-  int buffer;
   while (true)
-    {
-      if (xQueueReceive (queue, &buffer, (TickType_t)5000))
-        {
-          DEBUGOUT ("%d\r\n", buffer);
-          vTaskDelay (50);
-        }
-    }
+    ;
 }

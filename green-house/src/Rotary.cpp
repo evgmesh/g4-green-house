@@ -25,6 +25,8 @@ Rotary::Rotary (QueueHandle_t *level_q)
   NVIC_SetPriority (PIN_INT0_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY + 1);
   NVIC_EnableIRQ (PIN_INT0_IRQn);
 
+  // TODO add press config
+
   _level_q = level_q;
 }
 

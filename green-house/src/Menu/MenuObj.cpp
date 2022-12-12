@@ -8,15 +8,18 @@
 #include "MenuObj.h"
 
 const char *MENU_OBJ_LINES[]
-    = { "[SET CO2 LVL]",   " SET CO2 LVL ",  "SET [%4d] PPM",
-        "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
-        "[BACK]    SAVE ", " BACK    [SAVE]" };
+    = { "[SET CO2 LVL]",  " SET CO2 LVL ",   "[SENSORS] ",
+        " SENSORS ",      "SET [%4d] PPM",   "SET  %4d  PPM",
+        "SET <%4d> PPM",  " BACK     SAVE ", "[BACK]    SAVE ",
+        " BACK    [SAVE]" };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 {
   _lcd = lcd;
   _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;
+  SetLineToConst (1, MENU_OBJ_LINES[CO2_FOCUS]);
+  SetLineToConst (2, MENU_OBJ_LINES[SENSORS_UNFOCUS]);
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
@@ -48,6 +51,7 @@ void
 MenuObj::HandleObj (const MenuObjEvent &event)
 {
   (this->*current) (event);
+  updateLCD ();
 }
 
 void
@@ -71,6 +75,16 @@ MenuObj::SetLineToFMT (uint8_t line, const char *fmt, ...)
   va_start (args, fmt);
   vsnprintf (lcd_line[line - 1], 16, fmt, args);
   va_end (args);
+}
+
+void
+MenuObj::updateLCD (void)
+{
+  _lcd->clear ();
+  _lcd->setCursor (0, 0);
+  _lcd->print (lcd_line[0]);
+  _lcd->setCursor (0, 1);
+  _lcd->print (lcd_line[1]);
 }
 
 void

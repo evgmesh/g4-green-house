@@ -27,7 +27,7 @@ void vButtonTask (void *pvParams);
 void vDisplayTask (void *pvParams);
 
 /* MODBUS SENSORS TASK DEFINES */
-#define mbsensorsTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 4)
+#define mbsensorsTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)
 #define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 2UL) //Higher priority due to the modbus transaction strict timing.
 void vMbsensorsTask (void *pvParams);
 

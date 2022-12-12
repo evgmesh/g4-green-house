@@ -8,6 +8,7 @@
 #include "Counter.h"
 #include "LiquidCrystal.h"
 #include "MenuObjEvent.h"
+#include "common_values.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,12 +37,12 @@ public:
   MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm);
   virtual ~MenuObj ();
 
-  /** Handle the given event of the current MenuObj
+  /**
+   * @brief Handle the action of rotary
    *
-   * @param event event to be handled in the MenuObj
+   * @param action press / rotate
    */
-  void HandleObj (const MenuObjEvent &event);
-
+  void HandleRotaryAction (RotaryAction action);
 
 private:
   /* Variables and objects */
@@ -54,6 +55,12 @@ private:
   void SetEvent (obj_pointer newevent);
   void SetLineToConst (uint8_t line, const char *to);
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
+
+  /** Handle the given event of the current MenuObj
+   *
+   * @param event event to be handled in the MenuObj
+   */
+  void HandleObj (const MenuObjEvent &event);
 
   /** Set CO2 level
    *

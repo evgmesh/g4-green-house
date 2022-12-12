@@ -7,7 +7,5 @@ void vMQTTTask (void *pvParameters) {
 	mqtt mqtt;
 	while(true) {
 		mqtt.publish(topic, message);
-//		vTaskDelay(1000);
 	}
-//		vTaskDelay(1000);
 }

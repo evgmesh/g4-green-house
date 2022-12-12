@@ -38,9 +38,10 @@ public:
 private:
   DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
                              { 0, 5, DigitalIoPin::input, true },
-                             { 1, 8, DigitalIoPin::input, true } };
+                             { 1, 8, DigitalIoPin::pullup, true } };
 
   QueueHandle_t *_level_q;
+  int prev_timestamp;
   void sendActionAndAssertQueue (uint8_t *data, BaseType_t *const pxHPW);
 };
 

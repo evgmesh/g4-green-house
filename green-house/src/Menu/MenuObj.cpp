@@ -125,6 +125,7 @@ MenuObj::ObjSetPPM (const MenuObjEvent &event)
       SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
+      SetEvent(&MenuObj::ObjChangePPMValue);
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjBack);

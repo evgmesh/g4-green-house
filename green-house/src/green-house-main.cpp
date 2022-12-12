@@ -17,8 +17,7 @@ main (void)
   /* Generic Initialization */
   SystemCoreClockUpdate ();
   Board_Init ();
-  /* Enable SysTick Timer */
-  SysTick_Config (SystemCoreClock / TICKRATE_HZ);
+
 
   heap_monitor_setup ();
 
@@ -31,8 +30,8 @@ main (void)
   xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
-  xTaskCreate (vMQTTDemoTask, "MQTTDemoTask", democonfigDEMO_STACKSIZE, NULL,
-               displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
+//  xTaskCreate (vMQTTDemoTask, "MQTTDemoTask", democonfigDEMO_STACKSIZE, NULL,
+//               displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   /* Start the scheduler */
   vTaskStartScheduler ();

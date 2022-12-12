@@ -36,11 +36,19 @@ typedef struct _green_house
   uint32_t co_two_level;
 } GH_DATA;
 
+typedef struct _sensors_val
+{
+  float co2_val;
+  float rhum_val;
+  float temp_val;
+} SENSORS_DATA;
+
 /* Common defines */
 #define TICKRATE_HZ (10) /* 10 ticks per second */
 
 /* global variables */
 extern QueueHandle_t queue;
+extern QueueHandle_t sensors;
 extern Rotary *rot;
 
 #endif /* COMMON_VALUES_H_ */

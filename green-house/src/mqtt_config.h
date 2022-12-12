@@ -34,9 +34,9 @@
 
  * #define democonfigMQTT_BROKER_ENDPOINT	"insert here."
  */
-#define MQTT_BROKER_ENDPOINT	 "192.168.100.13"
-#define WIFI_SSID	    		 "Kotiboksi_64EE"
-#define WIFI_PASS       		 "24C622949E993"
+#define MQTT_BROKER_ENDPOINT	 "192.168.1.254"
+#define WIFI_SSID	    		 "SmartIotMQTT"
+#define WIFI_PASS       		 "SmartIot"
 
 
 #endif /* MQTT_CONFIG_H_ */

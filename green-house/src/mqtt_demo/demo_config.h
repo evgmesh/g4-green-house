@@ -87,7 +87,7 @@ extern void vLoggingPrintf( const char * pcFormatString,
  * The topic name starts with the client identifier to ensure that each demo
  * interacts with a unique topic name.
  */
-#define mqttexampleTOPIC democonfigCLIENT_IDENTIFIER "/group4/topic"
+#define mqttexampleTOPIC  "channels/1955513/publish"
 
 /**
  * @brief MQTT broker end point to connect to.
@@ -97,7 +97,7 @@ extern void vLoggingPrintf( const char * pcFormatString,
  *
  * #define democonfigMQTT_BROKER_ENDPOINT				"insert here."
  */
-#define democonfigMQTT_BROKER_ENDPOINT				"192.168.100.13"
+#define democonfigMQTT_BROKER_ENDPOINT				"192.168.1.89"
 
 /**
  * @brief The port to use for the demo.
@@ -116,8 +116,8 @@ extern void vLoggingPrintf( const char * pcFormatString,
 
 
 #if 1
-#define WIFI_SSID	    "Kotiboksi_64EE"
-#define WIFI_PASS       "24C622949E993"
+#define WIFI_SSID	    "SmartIotMQTT"
+#define WIFI_PASS       "SmartIot"
 #endif
 
 #endif /* DEMO_CONFIG_H */

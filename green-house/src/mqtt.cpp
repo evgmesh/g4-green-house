@@ -6,9 +6,13 @@
  */
 
 #include "mqtt.h"
+#include "mqtt_demo/logging_stack.h"
+#include "mqtt_demo/logging_levels.h"
 
 mqtt::mqtt() {
 
+		std::string topic("HotTopic");
+		std::string message("Please, print something!");
 	/* Set the pParams member of the network context with desired transport. */
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
@@ -374,8 +378,8 @@ static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string top
   /* This demo uses QoS0. */
   xMQTTPublishInfo.qos = MQTTQoS0;
   xMQTTPublishInfo.retain = false;
-  xMQTTPublishInfo.pTopicName = mqttexampleTOPIC;
-  xMQTTPublishInfo.topicNameLength = (uint16_t)strlen (mqttexampleTOPIC);
+  xMQTTPublishInfo.pTopicName = topic.c_str();
+  xMQTTPublishInfo.topicNameLength = (uint16_t)strlen (topic.c_str());
 #if 0
     xMQTTPublishInfo.pPayload = mqttexampleMESSAGE;
     xMQTTPublishInfo.payloadLength = strlen( mqttexampleMESSAGE );

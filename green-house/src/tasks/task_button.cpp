@@ -28,7 +28,7 @@ vButtonTask (void *pvParams)
 {
   Rotary rotor (&queue);
   rot = &rotor;
-  queue = xQueueCreate (100, sizeof (uint8_t));
+  queue = xQueueCreate (100, sizeof (RotaryAction));
   vQueueAddToRegistry (queue, "ButtonsQueue");
 
   /* Make DEBUGOUT work - include retarget_uart*/

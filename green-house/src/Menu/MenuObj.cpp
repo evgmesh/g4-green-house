@@ -12,7 +12,6 @@ const char *MENU_OBJ_LINES[]
         "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
         "[BACK]    SAVE ", " BACK    [SAVE]" };
 
-
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 {
   _lcd = lcd;
@@ -24,6 +23,25 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 MenuObj::~MenuObj ()
 {
   // TODO Auto-generated destructor stub
+}
+
+void
+MenuObj::HandleRotaryAction (RotaryAction action)
+{
+  switch (action)
+    {
+    case ROTARY_ACTION::ROTARY_CLOCKWISE:
+      HandleObj (MenuObjEvent (MenuObjEvent::eRollClockWise));
+      break;
+    case ROTARY_ACTION::ROTARY_CCLOCKWISE:
+      HandleObj (MenuObjEvent (MenuObjEvent::eRollCClockWise));
+      break;
+    case ROTARY_ACTION::ROTARY_PRESS:
+      HandleObj (MenuObjEvent (MenuObjEvent::eClick));
+      break;
+    default:
+      break;
+    }
 }
 
 void

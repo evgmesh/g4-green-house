@@ -21,6 +21,10 @@ main (void)
   heap_monitor_setup ();
 
   retarget_init();
+  
+  xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE, NULL, 
+               mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);
+
   xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, NULL,
                (tskIDLE_PRIORITY + 1UL), EMPTY_TASK_HANDLE);
 

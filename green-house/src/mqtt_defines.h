@@ -157,45 +157,11 @@ struct NetworkContext
 /*-----------------------------------------------------------*/
 
 /**
- * @brief The task used to demonstrate the MQTT API.
- *
- * @param[in] pvParameters Parameters as passed at the time of task creation.
- * Not used in this example.
- */
-//static void prvMQTTDemoTask (void *pvParameters);
-
-/**
- * @brief Function to update variable #xTopicFilterContext with status
- * information from Subscribe ACK. Called by the event callback after
- * processing an incoming SUBACK packet.
- *
- * @param[in] Server response to the subscription request.
- */
-static void prvUpdateSubAckStatus (MQTTPacketInfo_t *pxPacketInfo);
-
-/**
- * @brief Subscribes to the topic as specified in mqttexampleTOPIC at the top
- * of this file. In the case of a Subscribe ACK failure, then subscription is
- * retried using an exponential backoff strategy with jitter.
- *
- * @param[in] pxMQTTContext MQTT context pointer.
- */
-static void prvMQTTSubscribeWithBackoffRetries (MQTTContext_t *pxMQTTContext);
-
-/**
  * @brief Publishes a message mqttexampleMESSAGE on mqttexampleTOPIC topic.
  *
  * @param[in] pxMQTTContext MQTT context pointer.
  */
 static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string, std::string);
-
-/**
- * @brief Unsubscribes from the previously subscribed topic as specified
- * in mqttexampleTOPIC.
- *
- * @param[in] pxMQTTContext MQTT context pointer.
- */
-static void prvMQTTUnsubscribeFromTopic (MQTTContext_t *pxMQTTContext);
 
 /**
  * @brief The timer query function provided to the MQTT context.
@@ -251,19 +217,6 @@ static uint8_t ucSharedBuffer[mqttexampleSHARED_BUFFER_SIZE];
  * holding the timestamp.
  */
 static uint32_t ulGlobalEntryTimeMs;
-
-/**
- * @brief Packet Identifier generated when Subscribe request was sent to the
- * broker; it is used to match received Subscribe ACK to the transmitted ACK.
- */
-static uint16_t usSubscribePacketIdentifier;
-
-/**
- * @brief Packet Identifier generated when Unsubscribe request was sent to the
- * broker; it is used to match received Unsubscribe response to the transmitted
- * unsubscribe request.
- */
-static uint16_t usUnsubscribePacketIdentifier;
 
 /**
  * @brief A pair containing a topic filter and its SUBACK status.

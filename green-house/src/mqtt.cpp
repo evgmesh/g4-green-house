@@ -10,9 +10,6 @@
 #include "mqtt_demo/logging_levels.h"
 
 mqtt::mqtt() {
-
-		std::string topic("HotTopic");
-		std::string message("Please, print something!");
 	/* Set the pParams member of the network context with desired transport. */
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
@@ -31,44 +28,32 @@ void mqtt::connect() {
 
       /* Sends an MQTT Connect packet over the already connected TCP socket,
        * and waits for a connection acknowledgment (CONNACK) packet. */
-      LogInfo (("Creating an MQTT connection to %s.",
-                democonfigMQTT_BROKER_ENDPOINT));
+      LogInfo (("Creating an MQTT connection to %s.", MQTT_BROKER_ENDPOINT));
       prvCreateMQTTConnectionWithBroker (&xMQTTContext, &xNetworkContext);
-}
-
-    /* If server rejected the subscription request, attempt to resubscribe to
-     * the topic. Attempts are made according to the exponential backoff
-     * retry strategy declared in backoff_algorithm.h. */
-void mqtt::subscribe() {
-    prvMQTTSubscribeWithBackoffRetries (&xMQTTContext);
 }
 
 /* Publish messages with QoS0, then send and process Keep Alive messages.
  */
 void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
-	const char * mqtt_mess  = new char[mqtt_message.length()+1];
-	mqtt_mess = mqtt_message.c_str();
-	uint32_t ulPublishCount = 0U, ulTopicCount = 0U;
-	const uint32_t ulMaxPublishCount = 5UL;
-	for (ulPublishCount = 0; ulPublishCount < ulMaxPublishCount;
-			   ulPublishCount++)
-			{
-			  LogInfo (("Publish to the MQTT topic %s.", mqttexampleTOPIC));
-			  prvMQTTPublishToTopic (&xMQTTContext, mqtt_topic, mqtt_message);
-			  vTaskDelay (mqttexamplePROCESS_LOOP_TIMEOUT_MS);
-			  /* Process the incoming publish echo. Since the application
-			   * subscribed to the same topic, the broker will send the same
-			   * publish message back to the application. */
-			  LogInfo (("Attempt to receive publish message from broker."));
-			  xMQTTStatus = MQTT_ProcessLoop (&xMQTTContext,
-											  mqttexamplePROCESS_LOOP_TIMEOUT_MS);
-			  configASSERT (xMQTTStatus == MQTTSuccess);
+//	const char * mqtt_mess  = new char[mqtt_message.length()+1];
+//	mqtt_mess = mqtt_message.c_str();
+	  LogInfo (("Publish to the MQTT topic %s.", mqttexampleTOPIC));
+	  prvMQTTPublishToTopic (&xMQTTContext, mqtt_topic.c_str(), mqtt_message.c_str());
+	  vTaskDelay (mqttexamplePROCESS_LOOP_TIMEOUT_MS);
+	  /* Process the incoming publish echo. Since the application
+	   * subscribed to the same topic, the broker will send the same
+	   * publish message back to the application. */
+	  LogInfo (("Attempt to receive publish message from broker."));
+	  xMQTTStatus = MQTT_ProcessLoop (&xMQTTContext,
+									  mqttexamplePROCESS_LOOP_TIMEOUT_MS);
+	  configASSERT (xMQTTStatus == MQTTSuccess);
 
-			  /* Leave the connection idle for some time. */
-			  LogInfo (("Keeping Connection Idle...\r\n"));
-			  vTaskDelay (mqttexampleDELAY_BETWEEN_PUBLISHES);
-			}
-	delete[] mqtt_mess;
+	  /* Leave the connection idle for some time. */
+	  LogInfo (("Keeping Connection Idle...\r\n"));
+	  vTaskDelay (mqttexampleDELAY_BETWEEN_PUBLISHES);
+
+	  /* !!!!!!!!!!!!!!!!!  ATTENTION!!!!!!! Possible memory leak. With delete - hard fault */
+//	delete[] mqtt_mess;
 }
 
 
@@ -380,13 +365,8 @@ static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string top
   xMQTTPublishInfo.retain = false;
   xMQTTPublishInfo.pTopicName = topic.c_str();
   xMQTTPublishInfo.topicNameLength = (uint16_t)strlen (topic.c_str());
-#if 0
-    xMQTTPublishInfo.pPayload = mqttexampleMESSAGE;
-    xMQTTPublishInfo.payloadLength = strlen( mqttexampleMESSAGE );
-#else
   xMQTTPublishInfo.pPayload = msg;
   xMQTTPublishInfo.payloadLength = len;
-#endif
 
   /* Send PUBLISH packet. Packet ID is not used for a QoS0 publish. */
   xResult = MQTT_Publish (pxMQTTContext, &xMQTTPublishInfo, 0U);

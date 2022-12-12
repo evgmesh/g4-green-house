@@ -20,6 +20,7 @@ main (void)
 
   heap_monitor_setup ();
 
+  retarget_init();
 //  xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, NULL,
 //               (tskIDLE_PRIORITY + 1UL), EMPTY_TASK_HANDLE);
 

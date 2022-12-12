@@ -36,7 +36,7 @@ void vMQTTTask (void *pvParams);
 
 /* MODBUS SENSORS TASK DEFINES */
 #define mbsensorsTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)
-#define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 2UL) //Higher priority due to the modbus transaction strict timing.
+#define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
 void vMbsensorsTask (void *pvParams);
 
 #endif /* GREEN_HOUSE_TASKS_H_ */

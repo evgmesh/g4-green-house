@@ -20,6 +20,8 @@ enum
 {
   CO2_FOCUS,
   CO2_UNFOCUS,
+  SENSORS_FOCUS,
+  SENSORS_UNFOCUS,
   SET_PPM_FOCUS,
   SET_PPM_UNFOCUS,
   CHANGE_PPM,
@@ -55,6 +57,7 @@ private:
   void SetEvent (obj_pointer newevent);
   void SetLineToConst (uint8_t line, const char *to);
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
+  void updateLCD(void);
 
   /** Handle the given event of the current MenuObj
    *

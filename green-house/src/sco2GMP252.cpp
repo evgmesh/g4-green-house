@@ -12,7 +12,7 @@ sco2GMP252::sco2GMP252(unsigned int retries, unsigned int wait) : node{240}, co2
 	this->pres_value = 0;
 	this->hum_value = 0;
 	//Attempt to setup the sensor. (most probably will fail)
-	if(!check_init_precise()) this->init_precise();
+	//if(!check_init_precise()) this->init_precise();
 }
 
 sco2GMP252::~sco2GMP252() {}

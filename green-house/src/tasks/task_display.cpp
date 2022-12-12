@@ -36,7 +36,7 @@ createLCD ()
 void
 vDisplayTask (void *pvParams)
 {
-  retarget_init ();
+  //retarget_init ();
   DigitalIoPin relay (0, 27, DigitalIoPin::output);
   ModbusMaster node3 (240);
   node3.begin (9600);

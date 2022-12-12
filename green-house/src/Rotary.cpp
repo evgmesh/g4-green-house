@@ -6,12 +6,12 @@ Rotary::Rotary (QueueHandle_t *level_q)
   /* Initialize PININT driver */
   Chip_PININT_Init (LPC_GPIO_PIN_INT);
 
-  Chip_SYSCTL_PeriphReset(RESET_PININT);
+  //Chip_SYSCTL_PeriphReset(RESET_PININT);
 	/* Enable PININT clock */
-	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PININT);
+	//Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PININT);
 
 	/* Reset the PININT block */
-	Chip_SYSCTL_PeriphReset(RESET_PININT);
+	//Chip_SYSCTL_PeriphReset(RESET_PININT);
 
   /* Configure interrupt channel for the GPIO pin in INMUX block */
   Chip_INMUX_PinIntSel (0, 0, 5);

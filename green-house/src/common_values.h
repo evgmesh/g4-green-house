@@ -26,6 +26,7 @@
 #include "LiquidCrystal.h"
 #include "ModbusRegister.h"
 #include "Rotary.h"
+#include "mqtt.h"
 
 /* std includes */
 #include <cstring>

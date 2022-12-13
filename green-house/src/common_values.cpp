@@ -10,5 +10,6 @@
 /* global variables */
 QueueHandle_t queue;
 QueueHandle_t set_point_queue;
+QueueHandle_t sensors_q;
 
 

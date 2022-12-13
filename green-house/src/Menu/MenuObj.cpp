@@ -7,19 +7,20 @@
 
 #include "MenuObj.h"
 
-const char *MENU_OBJ_LINES[]
-    = { "[SET CO2 LVL]",  " SET CO2 LVL ",   "[SENSORS] ",
-        " SENSORS ",      "SET [%4d] PPM",   "SET  %4d  PPM",
-        "SET <%4d> PPM",  " BACK     SAVE ", "[BACK]    SAVE ",
-        " BACK    [SAVE]" };
+const char *MENU_OBJ_LINES[] = {
+  "[SET CO2 LVL]",   " SET CO2 LVL ",   "[SHOW VALUES]", " SHOW VALUES ",
+  "SET [%4d] PPM",   "SET  %4d  PPM",   "SET <%4d> PPM", " BACK     SAVE ",
+  "[BACK]    SAVE ", " BACK    [SAVE]", "  CO2:%4d PPM ", "> CO2:%4d PPM",
+  "  RH:%2d% ",       "> RH:%2d%",       "  TEMP: %2d ",   "> TEMP: %d",
+  "  SP:%4d PPM ",    "> SP:%4d PPM",    "  VALVE: %s ",   "> VALVE: %s",
+  " BACK TO MENU ",  "[BACK TO MENU]"
+};
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
 {
   _lcd = lcd;
   _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;
-  SetLineToConst (1, MENU_OBJ_LINES[CO2_FOCUS]);
-  SetLineToConst (2, MENU_OBJ_LINES[SENSORS_UNFOCUS]);
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
@@ -94,6 +95,7 @@ MenuObj::ObjSetCOLevel (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[CO2_FOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[SHOW_VALUES_UNFOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
       SetLineToConst (1, MENU_OBJ_LINES[CO2_UNFOCUS]);
@@ -102,10 +104,10 @@ MenuObj::ObjSetCOLevel (const MenuObjEvent &event)
       SetEvent (&MenuObj::ObjSetPPM);
       break;
     case MenuObjEvent::eRollClockWise:
-      SetEvent (&MenuObj::ObjSensors);
+      SetEvent (&MenuObj::ObjShowValues);
       break;
     case MenuObjEvent::eRollCClockWise:
-      SetEvent (&MenuObj::ObjSensors);
+      SetEvent (&MenuObj::ObjShowValues);
       break;
     default:
       break;
@@ -125,7 +127,7 @@ MenuObj::ObjSetPPM (const MenuObjEvent &event)
       SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_UNFOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
-      SetEvent(&MenuObj::ObjChangePPMValue);
+      SetEvent (&MenuObj::ObjChangePPMValue);
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjBack);
@@ -218,22 +220,182 @@ MenuObj::ObjSave (const MenuObjEvent &event)
 }
 
 void
-MenuObj::ObjSensors (const MenuObjEvent &event)
+MenuObj::ObjShowValues (const MenuObjEvent &event)
 {
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[CO2_UNFOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[SHOW_VALUES_FOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      /* code */
+      SetLineToConst (2, MENU_OBJ_LINES[SHOW_VALUES_UNFOCUS]);
+      break;
+    case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjValuesCO);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesCO (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_CO2_FOCUS], 500);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS], 99);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_CO2_UNFOCUS], 500);
       break;
     case MenuObjEvent::eClick:
       break;
     case MenuObjEvent::eRollClockWise:
-
+      SetEvent (&MenuObj::ObjValuesRH);
       break;
     case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesBackToMenu);
+      break;
 
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesRH (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_CO2_UNFOCUS], 500);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_FOCUS], 99);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS], 99);
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjValuesTEMP);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesCO);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesTEMP (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_FOCUS], 99);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_SP_UNFOCUS], _ppm->getCurrent ());
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS], 99);
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjValuesSP);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesRH);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesSP (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS], 99);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_SP_FOCUS], _ppm->getCurrent ());
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_SP_UNFOCUS], _ppm->getCurrent ());
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjValuesVALVE);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesTEMP);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesVALVE (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_FOCUS], "OFF");
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_TO_MENU_UNFOCUS]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS], "OFF");
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjValuesBackToMenu);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesSP);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjValuesBackToMenu (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS], "OFF");
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_TO_MENU_FOCUS]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToConst (2, MENU_OBJ_LINES[BACK_TO_MENU_UNFOCUS]);
+      break;
+    case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjValuesCO);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjValuesVALVE);
       break;
 
     default:

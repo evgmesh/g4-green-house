@@ -20,14 +20,27 @@ enum
 {
   CO2_FOCUS,
   CO2_UNFOCUS,
-  SENSORS_FOCUS,
-  SENSORS_UNFOCUS,
+  SHOW_VALUES_FOCUS,
+  SHOW_VALUES_UNFOCUS,
   SET_PPM_FOCUS,
   SET_PPM_UNFOCUS,
   CHANGE_PPM,
   BACK_UNFOCUS_SAVE_UNFOCUS,
   BACK_FOCUS_SAVE_UNFOCUS,
-  BACK_UNFOCUS_SAVE_FOCUS
+  BACK_UNFOCUS_SAVE_FOCUS,
+  CURR_CO2_UNFOCUS,
+  CURR_CO2_FOCUS,
+  CURR_HUM_UNFOCUS,
+  CURR_HUM_FOCUS,
+  CURR_TEMP_UNFOCUS,
+  CURR_TEMP_FOCUS,
+  CURR_SP_UNFOCUS,
+  CURR_SP_FOCUS,
+  sCURR_VALVE_UNFOCUS,
+  sCURR_VALVE_FOCUS,
+  BACK_TO_MENU_UNFOCUS,
+  BACK_TO_MENU_FOCUS
+
 };
 
 class MenuObj;
@@ -57,7 +70,7 @@ private:
   void SetEvent (obj_pointer newevent);
   void SetLineToConst (uint8_t line, const char *to);
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
-  void updateLCD(void);
+  void updateLCD (void);
 
   /** Handle the given event of the current MenuObj
    *
@@ -95,11 +108,47 @@ private:
    */
   void ObjSave (const MenuObjEvent &event);
 
-  /** Sensors
+  /** Values
    *
    * @param event event of the state
    */
-  void ObjSensors (const MenuObjEvent &event);
+  void ObjShowValues (const MenuObjEvent &event);
+
+  /** CO2
+   *
+   * @param event event of the state
+   */
+  void ObjValuesCO (const MenuObjEvent &event);
+
+  /** RH
+   *
+   * @param event event of the state
+   */
+  void ObjValuesRH (const MenuObjEvent &event);
+
+  /** TEMP
+   *
+   * @param event event of the state
+   */
+  void ObjValuesTEMP (const MenuObjEvent &event);
+
+  /** SP
+   *
+   * @param event event of the state
+   */
+  void ObjValuesSP (const MenuObjEvent &event);
+
+  /** VALVE
+   *
+   * @param event event of the state
+   */
+  void ObjValuesVALVE (const MenuObjEvent &event);
+
+  /** Back to Menu
+   *
+   * @param event event of the state
+   */
+  void ObjValuesBackToMenu (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

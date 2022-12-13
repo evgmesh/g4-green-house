@@ -8,12 +8,13 @@
 #include "MenuObj.h"
 
 const char *MENU_OBJ_LINES[] = {
-  "[SET CO2 LVL]",   " SET CO2 LVL ",   "[SHOW VALUES]", " SHOW VALUES ",
-  "SET [%4d] PPM",   "SET  %4d  PPM",   "SET <%4d> PPM", " BACK     SAVE ",
+  "[SET CO2 LVL]",   " SET CO2 LVL ",   "[SHOW VALUES]",  " SHOW VALUES ",
+  "[SHOW ALL]",      " SHOW ALL",       "[HARD RESET]",   " HARD RESET ",
+  "SET [%4d] PPM",   "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
   "[BACK]    SAVE ", " BACK    [SAVE]", "  CO2:%4d PPM ", "> CO2:%4d PPM",
-  "  RH:%2d% ",       "> RH:%2d%",       "  TEMP: %2d ",   "> TEMP: %d",
-  "  SP:%4d PPM ",    "> SP:%4d PPM",    "  VALVE: %s ",   "> VALVE: %s",
-  " BACK TO MENU ",  "[BACK TO MENU]"
+  "  RH:%2d% ",      "> RH:%2d%",       "  TEMP: %2d ",   "> TEMP: %d",
+  "  SP:%4d PPM ",   "> SP:%4d PPM",    "  VALVE: %s ",   "> VALVE: %s",
+  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "φ:%2d T:%2d V:%s"
 };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
@@ -235,10 +236,89 @@ MenuObj::ObjShowValues (const MenuObjEvent &event)
       SetEvent (&MenuObj::ObjValuesCO);
       break;
     case MenuObjEvent::eRollClockWise:
-      SetEvent (&MenuObj::ObjSetCOLevel);
+      SetEvent (&MenuObj::ObjShowValuesMax);
       break;
     case MenuObjEvent::eRollCClockWise:
       SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjShowValuesMax (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[SHOW_ALL_FOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[RESET_UNFOCUS]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToConst (2, MENU_OBJ_LINES[SHOW_ALL_UNFOCUS]);
+      break;
+    case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjShowALL);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjReset);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjShowValues);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjShowALL (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToFMT (1, MENU_OBJ_LINES[ALL_L_1_4d_4d], 500,
+                    _ppm->getCurrent ());
+      SetLineToFMT (2, MENU_OBJ_LINES[ALL_L_2_2d_2d_s], 99, 22, "OFF");
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjReset (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[SHOW_ALL_UNFOCUS]);
+      SetLineToConst (2, MENU_OBJ_LINES[RESET_FOCUS]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToConst (2, MENU_OBJ_LINES[SHOW_ALL_UNFOCUS]);
+      break;
+    case MenuObjEvent::eClick:
+      // TODO EEPROM erase
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjShowValuesMax);
       break;
 
     default:

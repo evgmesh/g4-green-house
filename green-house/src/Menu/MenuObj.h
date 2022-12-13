@@ -22,6 +22,10 @@ enum
   CO2_UNFOCUS,
   SHOW_VALUES_FOCUS,
   SHOW_VALUES_UNFOCUS,
+  SHOW_ALL_FOCUS,
+  SHOW_ALL_UNFOCUS,
+  RESET_FOCUS,
+  RESET_UNFOCUS,
   SET_PPM_FOCUS,
   SET_PPM_UNFOCUS,
   CHANGE_PPM,
@@ -39,7 +43,9 @@ enum
   sCURR_VALVE_UNFOCUS,
   sCURR_VALVE_FOCUS,
   BACK_TO_MENU_UNFOCUS,
-  BACK_TO_MENU_FOCUS
+  BACK_TO_MENU_FOCUS,
+  ALL_L_1_4d_4d,
+  ALL_L_2_2d_2d_s
 
 };
 
@@ -113,6 +119,24 @@ private:
    * @param event event of the state
    */
   void ObjShowValues (const MenuObjEvent &event);
+
+  /** All values minimalistic
+   *
+   * @param event event of the state
+   */
+  void ObjShowValuesMax (const MenuObjEvent &event);
+
+  /** SHOW all values
+   *
+   * @param event event of the state
+   */
+  void ObjShowALL (const MenuObjEvent &event);
+
+  /** Erase EEPROM
+   *
+   * @param event event of the state
+   */
+  void ObjReset (const MenuObjEvent &event);
 
   /** CO2
    *

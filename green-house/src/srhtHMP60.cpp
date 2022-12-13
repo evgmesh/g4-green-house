@@ -3,11 +3,18 @@
 #include "task.h"
 #include "uart/retarget_uart.h"
 
+static void
+idle_delay ()
+{
+  vTaskDelay (1);
+}
+
 srhtHMP60::srhtHMP60(unsigned int retries, unsigned int wait) : node{241}, rh0{&node, 0x0000}, rh1{&node, 0x0001}, t0{&node, 0x0002}, t1{&node, 0x0003},
 err_reg{&node, 0x0200}, err_code{&node, 0x203}, err_code2{&node, 0x204}, retries(retries), wait(wait) {
 	this->node.begin(9600);
 	this->status = false;
 	this->elapsed_time = 0;
+	node.idle (idle_delay);
 }
 
 srhtHMP60::~srhtHMP60() {}

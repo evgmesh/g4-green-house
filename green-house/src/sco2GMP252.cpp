@@ -1,6 +1,12 @@
 #include "sco2GMP252.h"
 #include "task.h"
 
+static void
+idle_delay ()
+{
+  vTaskDelay (1);
+}
+
 sco2GMP252::sco2GMP252(unsigned int retries, unsigned int wait) : node{240}, co2_reg{&node, 0x0000}, co2_reg2{&node, 0x0001},
  voprcom_reg{&node, 0x208}, voprcom_reg2{&node, 0x209}, vohumcom_reg{&node, 0x20c}, vohumcom_reg2{&node, 0x20d},
  mode_prescom_reg{&node, 0x304}, mode_tempcom_reg{&node, 0x305}, mode_humcom_reg{&node, 0x306},
@@ -11,6 +17,7 @@ sco2GMP252::sco2GMP252(unsigned int retries, unsigned int wait) : node{240}, co2
 	this->elapsed_time = 0;
 	this->pres_value = 0;
 	this->hum_value = 0;
+	node.idle (idle_delay);
 	//Attempt to setup the sensor. (most probably will fail)
 	//if(!check_init_precise()) this->init_precise();
 }

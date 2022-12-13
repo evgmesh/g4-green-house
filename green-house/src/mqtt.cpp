@@ -35,9 +35,7 @@ void mqtt::connect() {
 /* Publish messages with QoS0, then send and process Keep Alive messages.
  */
 void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
-//	const char * mqtt_mess  = new char[mqtt_message.length()+1];
-//	mqtt_mess = mqtt_message.c_str();
-	  LogInfo (("Publish to the MQTT topic %s.", mqttexampleTOPIC));
+	  LogInfo (("Publish to the MQTT topic %s.", mqttTOPIC));
 	  prvMQTTPublishToTopic (&xMQTTContext, mqtt_topic.c_str(), mqtt_message.c_str());
 	  vTaskDelay (mqttexamplePROCESS_LOOP_TIMEOUT_MS);
 	  /* Process the incoming publish echo. Since the application
@@ -50,10 +48,7 @@ void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
 
 	  /* Leave the connection idle for some time. */
 	  LogInfo (("Keeping Connection Idle...\r\n"));
-	  vTaskDelay (mqttexampleDELAY_BETWEEN_PUBLISHES);
-
-	  /* !!!!!!!!!!!!!!!!!  ATTENTION!!!!!!! Possible memory leak. With delete - hard fault */
-//	delete[] mqtt_mess;
+	  vTaskDelay (DELAY_BETWEEN_PUBLISHES);
 }
 
 
@@ -160,9 +155,9 @@ static void prvMQTTProcessIncomingPublish (MQTTPublishInfo_t *pxPublishInfo)
   LogInfo (("Incoming QoS : %d\n", pxPublishInfo->qos));
 
   /* Verify the received publish is for the we have subscribed to. */
-  if ((pxPublishInfo->topicNameLength == strlen (mqttexampleTOPIC))
+  if ((pxPublishInfo->topicNameLength == strlen (mqttTOPIC))
       && (0
-          == strncmp (mqttexampleTOPIC, pxPublishInfo->pTopicName,
+          == strncmp (mqttTOPIC, pxPublishInfo->pTopicName,
                       pxPublishInfo->topicNameLength)))
     {
       LogInfo (
@@ -321,6 +316,10 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
    * will ensure that the broker does not store any data when this client
    * gets disconnected. */
   xConnectInfo.cleanSession = true;
+  xConnectInfo.pUserName = BROKER_USER_NAME;
+  xConnectInfo.userNameLength = (uint16_t)strlen (BROKER_USER_NAME);
+  xConnectInfo.pPassword = BROKER_PASSWORD;
+  xConnectInfo.passwordLength = (uint16_t)strlen (BROKER_PASSWORD);
 
   /* The client identifier is used to uniquely identify this MQTT client to
    * the MQTT broker. In a production device the identifier can be something

@@ -9,6 +9,7 @@
 #define MQTT_CONFIG_H_
 
 #define SMARTIOTMQTT 1
+#define DANIIL 0
 
 #define CLIENT_IDENTIFIER			"GH-MQTT-G4"
 
@@ -25,10 +26,12 @@
 #define WIFI_SSID	    		 "SmartIotMQTT"
 #define WIFI_PASS       		 "SmartIot"
 
-#else
+#elif DANIIL
 #define MQTT_BROKER_ENDPOINT	 "192.168.43.1"
 #define WIFI_SSID	    		 "test"
 #define WIFI_PASS       		 "12345678"
+
+#else
 
 #endif
 

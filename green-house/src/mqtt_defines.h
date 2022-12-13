@@ -18,9 +18,6 @@ extern "C" {
 #include "FreeRTOS.h"
 #include "task.h"
 
-/* Demo Specific configs. */
-#include "mqtt_demo/demo_config.h"
-
 /* MQTT library includes. */
 #include "core_mqtt.h"
 
@@ -32,42 +29,19 @@ extern "C" {
 
 }
 
-/*-----------------------------------------------------------*/
-
-/* Compile time error for undefined configs. */
-#ifndef democonfigMQTT_BROKER_ENDPOINT
-#error                                                                        \
-    "Define the config democonfigMQTT_BROKER_ENDPOINT by following the instructions in file demo_config.h."
-#endif
-
-/*-----------------------------------------------------------*/
-
-/* Default values for configs. */
-#ifndef democonfigCLIENT_IDENTIFIER
 
 /**
- * @brief The MQTT client identifier used in this example.  Each client
- * identifier must be unique so edit as required to ensure no two clients
- * connecting to the same broker use the same client identifier.
+ * @brief The topic to subscribe and publish to in the example.
  *
- * @note Appending __TIME__ to the client id string will reduce the possibility
- * of a client id collision in the broker. Note that the appended time is the
- * compilation time. This client id can cause collision, if more than one
- * instance of the same binary is used at the same time to connect to the
- * broker.
+ * The topic name starts with the client identifier to ensure that each demo
+ * interacts with a unique topic name.
  */
-#define democonfigCLIENT_IDENTIFIER "testClient" __TIME__
-#endif
+#define mqttTOPIC  			"channels/1955513/publish"
 
-#ifndef democonfigMQTT_BROKER_PORT
+#define BROKER_USER_NAME    "group4"
+#define BROKER_PASSWORD		"12345678"
 
-/**
- * @brief The port to use for the demo.
- */
-#define democonfigMQTT_BROKER_PORT (1883)
-#endif
 
-/*-----------------------------------------------------------*/
 
 /**
  * @brief The maximum number of retries for network operation with server.
@@ -97,10 +71,7 @@ extern "C" {
  */
 #define mqttexampleTOPIC_COUNT (1)
 
-/**
- * @brief The MQTT message published in this example.
- */
-#define mqttexampleMESSAGE "Hello World!"
+
 
 /**
  * @brief Dimensions a file scope buffer currently used to send and receive
@@ -108,11 +79,6 @@ extern "C" {
  */
 #define mqttexampleSHARED_BUFFER_SIZE (500U)
 
-/**
- * @brief Time to wait between each cycle of the demo implemented by
- * prvMQTTDemoTask().
- */
-#define mqttexampleDELAY_BETWEEN_DEMO_ITERATIONS (pdMS_TO_TICKS (20000U))
 
 /**
  * @brief Timeout for MQTT_ProcessLoop in milliseconds.
@@ -134,7 +100,7 @@ extern "C" {
  * @brief Delay between MQTT publishes. Note that the process loop also has a
  * timeout, so the total time between publishes is the sum of the two delays.
  */
-#define mqttexampleDELAY_BETWEEN_PUBLISHES (pdMS_TO_TICKS (2000U))
+#define DELAY_BETWEEN_PUBLISHES (pdMS_TO_TICKS (5000U))
 
 /**
  * @brief Transport timeout in milliseconds for transport send and receive.
@@ -232,18 +198,13 @@ typedef struct topicFilterContext
  * of a filter is updated when the event callback processes a SUBACK.
  */
 static topicFilterContext_t xTopicFilterContext[mqttexampleTOPIC_COUNT]
-    = { { mqttexampleTOPIC, MQTTSubAckFailure } };
+    = { { mqttTOPIC, MQTTSubAckFailure } };
 
 /**
  * @brief Static buffer used to hold MQTT messages being sent and received.
  */
 static MQTTFixedBuffer_t xBuffer
     = { .pBuffer = ucSharedBuffer, .size = mqttexampleSHARED_BUFFER_SIZE };
-
-
-//uint32_t uxRand() {
-//	return rand();
-//}
 
 
 

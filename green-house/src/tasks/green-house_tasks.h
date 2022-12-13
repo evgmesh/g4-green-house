@@ -30,7 +30,7 @@ void vDisplayTask (void *pvParams);
 void vRelayTask (void *pvParams);
 
 /* DISPLAY TASK DEFINES */
-#define mqttTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 4)
+#define mqttTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 5)
 #define mqttTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
 void vMQTTTask (void *pvParams);
 

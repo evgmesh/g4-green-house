@@ -27,6 +27,7 @@ vMbsensorsTask (void *pvParams)
         //sco2.read(data.co2_val, data.rhum_val, false);
         //Use imprecise read.
         sco2.read_rapid(data.co2_val, false);
+        xQueueOverwrite(sensors_q, &data);
         printf("Sensors data:\r\nco2: %.2f\r\nrel hum: %.2f\r\ntemp: %.2f\r\n", data.co2_val, data.rhum_val, data.temp_val);
         vTaskDelay(5000);
     }

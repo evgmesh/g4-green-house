@@ -36,12 +36,9 @@ extern "C" {
  * The topic name starts with the client identifier to ensure that each demo
  * interacts with a unique topic name.
  */
+
+
 #define mqttTOPIC  			"channels/1955513/publish"
-
-#define BROKER_USER_NAME    "group4"
-#define BROKER_PASSWORD		"12345678"
-
-
 
 /**
  * @brief The maximum number of retries for network operation with server.

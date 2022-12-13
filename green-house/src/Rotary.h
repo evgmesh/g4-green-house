@@ -36,12 +36,12 @@ public:
   portBASE_TYPE press_isr ();
 
 private:
-  DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true },
-                             { 0, 5, DigitalIoPin::input, true },
-                             { 1, 8, DigitalIoPin::pullup, true } };
-
+  DigitalIoPin signal[3] = { { 0, 6, DigitalIoPin::input, true},
+                             { 0, 5, DigitalIoPin::input, true},
+                             { 1, 8, DigitalIoPin::pullup, true }
+             };
   QueueHandle_t *_level_q;
-  int prev_timestamp;
+  volatile int32_t prev_qei_val;
   void sendActionAndAssertQueue (uint8_t *data, BaseType_t *const pxHPW);
 };
 

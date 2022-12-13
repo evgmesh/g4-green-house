@@ -45,13 +45,24 @@ vDisplayTask (void *pvParams)
   relay.write (0);
   LiquidCrystal *lcd = createLCD ();
   MenuObj menu(lcd, new Counter<uint16_t>(150, 1024, 20));
+  TickType_t timestamp = 0;
 
   RotaryAction rotary_action = 3;
   while (true)
     {
       if (xQueueReceive (queue, &rotary_action, portMAX_DELAY))
         {
-    	  menu.HandleRotaryAction(rotary_action);
+          if(rotary_action == ROTARY_ACTION::ROTARY_PRESS)
+          {
+            TickType_t current_timestamp = xTaskGetTickCount();
+            if(current_timestamp - timestamp > 10)
+            {
+              menu.HandleRotaryAction(rotary_action);
+              timestamp = current_timestamp;
+            }
+          }
+          else 
+            menu.HandleRotaryAction(rotary_action);
         }
 //      vTaskDelay (2000);
     }

@@ -41,6 +41,7 @@ typedef struct _green_house
 
 /* Common defines */
 #define TICKRATE_HZ (10) /* 10 ticks per second */
+#define ARDUINO_SIM 1
 typedef uint8_t RotaryAction;
 
 /* global variables */

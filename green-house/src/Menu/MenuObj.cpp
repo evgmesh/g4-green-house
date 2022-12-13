@@ -14,7 +14,7 @@ const char *MENU_OBJ_LINES[] = {
   "[BACK]    SAVE ", " BACK    [SAVE]", "  CO2:%4d PPM ", "> CO2:%4d PPM",
   "  RH:%2d% ",      "> RH:%2d%",       "  TEMP: %2d ",   "> TEMP: %d",
   "  SP:%4d PPM ",   "> SP:%4d PPM",    "  VALVE: %s ",   "> VALVE: %s",
-  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "φ:%2d T:%2d V:%s"
+  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "H:%2d T:%2d V:%s"
 };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)

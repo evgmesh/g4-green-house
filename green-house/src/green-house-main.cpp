@@ -22,7 +22,7 @@ main (void)
 
   retarget_init();
   
-  xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE, NULL, 
+  xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE, NULL,
                mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, NULL,

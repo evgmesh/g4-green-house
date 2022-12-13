@@ -12,10 +12,11 @@ Rotary *rot;
 extern "C"
 {
   void
-  PIN_INT0_IRQHandler (void)
+  QEI_IRQHandler (void)
   {
     portEND_SWITCHING_ISR (rot->rotate_isr ());
   }
+
   void
   PIN_INT1_IRQHandler (void)
   {
@@ -30,7 +31,8 @@ vButtonTask (void *pvParams)
   rot = &rotor;
   queue = xQueueCreate (100, sizeof (RotaryAction));
   vQueueAddToRegistry (queue, "ButtonsQueue");
-  while(true) {
-	  vTaskDelay(2000);
-  }
+  while (true)
+    {
+      vTaskDelay (2000);
+    }
 }

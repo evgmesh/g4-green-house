@@ -37,6 +37,8 @@ typedef struct _green_house
   float co2_val;
   float rhum_val;
   float temp_val;
+  uint16_t set_point;
+  bool valve_open;
 } GH_DATA;
 
 /* Common defines */
@@ -49,5 +51,6 @@ extern QueueHandle_t queue;
 extern QueueHandle_t set_point_queue;
 extern QueueHandle_t sensors_q;
 extern Rotary *rot;
+extern GH_DATA gh_common;
 
 #endif /* COMMON_VALUES_H_ */

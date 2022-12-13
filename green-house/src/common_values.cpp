@@ -11,5 +11,4 @@
 QueueHandle_t queue;
 QueueHandle_t set_point_queue;
 QueueHandle_t sensors_q;
-
-
+extern GH_DATA gh_common = { 0, 0, 0, 0, false };

@@ -8,9 +8,11 @@
 #ifndef GREEN_HOUSE_TASKS_H_
 #define GREEN_HOUSE_TASKS_H_
 
-#include "common_values.h"
+#include "EEPROMWrapper.h"
 #include "Menu/MenuObj.h"
 #include "Relay.h"
+#include "common_values.h"
+
 
 #define EMPTY_TASK_HANDLE (TaskHandle_t *)NULL
 

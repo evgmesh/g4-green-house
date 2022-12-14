@@ -17,8 +17,10 @@ const char *MENU_OBJ_LINES[] = {
   " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "H:%2d T:%2d V:%s"
 };
 
-MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm)
+MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
+                  EEPROM_Wrapper *eeprom)
 {
+  _eeprom = eeprom;
   _lcd = lcd;
   _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;

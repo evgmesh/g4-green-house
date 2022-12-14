@@ -6,6 +6,7 @@
  */
 
 #include "Counter.h"
+#include "EEPROMWrapper.h"
 #include "LiquidCrystal.h"
 #include "MenuObjEvent.h"
 #include "common_values.h"
@@ -55,7 +56,7 @@ typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
 class MenuObj
 {
 public:
-  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm);
+  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom);
   virtual ~MenuObj ();
 
   /**
@@ -71,6 +72,7 @@ private:
   LiquidCrystal *_lcd;
   char lcd_line[2][16] = { { 0 }, { 0 } };
   Counter<uint16_t> *_ppm;
+  EEPROM_Wrapper *_eeprom;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);

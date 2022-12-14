@@ -43,7 +43,8 @@ vDisplayTask (void *pvParams)
   ModbusRegister RH (&node3, 256, true);
   relay.write (0);
   LiquidCrystal *lcd = createLCD ();
-  MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20));
+  EEPROM_Wrapper mem;
+  MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20), &mem);
   TickType_t timestamp = 0;
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;

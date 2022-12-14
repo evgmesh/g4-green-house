@@ -108,7 +108,7 @@ MenuObj::ObjSetCOLevel (const MenuObjEvent &event)
       SetEvent (&MenuObj::ObjShowValues);
       break;
     case MenuObjEvent::eRollCClockWise:
-      SetEvent (&MenuObj::ObjShowValues);
+      SetEvent (&MenuObj::ObjReset);
       break;
     default:
       break;

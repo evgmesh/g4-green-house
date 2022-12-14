@@ -6,7 +6,6 @@
  */
 #include "green-house_tasks.h"
 
-
 static void
 idle_delay ()
 {
@@ -36,7 +35,7 @@ createLCD ()
 void
 vDisplayTask (void *pvParams)
 {
-  //retarget_init ();
+  // retarget_init ();
   DigitalIoPin relay (0, 27, DigitalIoPin::output);
   ModbusMaster node3 (240);
   node3.begin (9600);
@@ -44,26 +43,26 @@ vDisplayTask (void *pvParams)
   ModbusRegister RH (&node3, 256, true);
   relay.write (0);
   LiquidCrystal *lcd = createLCD ();
-  MenuObj menu(lcd, new Counter<uint16_t>(150, 1024, 20));
+  MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20));
   TickType_t timestamp = 0;
 
-  RotaryAction rotary_action = 3;
+  RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)
     {
       if (xQueueReceive (queue, &rotary_action, portMAX_DELAY))
         {
-          if(rotary_action == ROTARY_ACTION::ROTARY_PRESS)
-          {
-            TickType_t current_timestamp = xTaskGetTickCount();
-            if(current_timestamp - timestamp > 10)
+          if (rotary_action == ROTARY_ACTION::ROTARY_PRESS)
             {
-              menu.HandleRotaryAction(rotary_action);
-              timestamp = current_timestamp;
+              TickType_t current_timestamp = xTaskGetTickCount ();
+              if (current_timestamp - timestamp > 10)
+                {
+                  menu.HandleRotaryAction (rotary_action);
+                  timestamp = current_timestamp;
+                }
             }
-          }
-          else 
-            menu.HandleRotaryAction(rotary_action);
+          else
+            menu.HandleRotaryAction (rotary_action);
         }
-//      vTaskDelay (2000);
+      //      vTaskDelay (2000);
     }
 }

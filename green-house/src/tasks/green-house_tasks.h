@@ -14,11 +14,6 @@
 #include "common_values.h"
 
 #define EMPTY_TASK_HANDLE (TaskHandle_t *)NULL
-#define GH_COMMON_PARAM (void *)&gh_common
-#define GH_DATA_RESET                                                         \
-  {                                                                           \
-    0, 0, 0, 0, false                                                         \
-  }
 
 /* DISPLAY TASK DEFINES */
 #define displayTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)
@@ -32,7 +27,7 @@ void vRelayTask (void *pvParams);
 
 /* MODBUS SENSORS TASK DEFINES */
 #define mbsensorsTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)
-#define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+#define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
 void vMbsensorsTask (void *pvParams);
 
 #endif /* GREEN_HOUSE_TASKS_H_ */

@@ -14,7 +14,8 @@ const char *MENU_OBJ_LINES[] = {
   "[BACK]    SAVE ", " BACK    [SAVE]", "  CO2:%4d PPM ", "> CO2:%4d PPM",
   "  RH:%2d% ",      "> RH:%2d%",       "  TEMP: %2d ",   "> TEMP: %d",
   "  SP:%4d PPM ",   "> SP:%4d PPM",    "  VALVE: %s ",   "> VALVE: %s",
-  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "H:%2d T:%2d V:%s"
+  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4d S:%4d",  "H:%2d T:%2d V:%s",
+  "   HARD RESET  ", " YES      [NO]",  "[YES]      NO "
 };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
@@ -233,7 +234,7 @@ MenuObj::ObjSave (const MenuObjEvent &event)
       SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
-      saveSetPointToEEPROM();
+      saveSetPointToEEPROM ();
       SetEvent (&MenuObj::ObjSetCOLevel);
       break;
     case MenuObjEvent::eRollClockWise:
@@ -339,13 +340,66 @@ MenuObj::ObjReset (const MenuObjEvent &event)
       SetLineToConst (2, MENU_OBJ_LINES[SHOW_ALL_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
-      eraseSetPointFromEEPROM();
+      SetEvent (&MenuObj::ObjHARDResetNo);
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjSetCOLevel);
       break;
     case MenuObjEvent::eRollCClockWise:
       SetEvent (&MenuObj::ObjShowValuesMax);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjHARDResetYes (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[HARD_RESET]);
+      SetLineToConst (2, MENU_OBJ_LINES[HR_YES_F_NO_UF]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+      eraseSetPointFromEEPROM ();
+      SetEvent (&MenuObj::ObjReset);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjHARDResetNo);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjHARDResetNo);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjHARDResetNo (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[HARD_RESET]);
+      SetLineToConst (2, MENU_OBJ_LINES[HR_YES_UF_NO_F]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+      SetEvent (&MenuObj::ObjReset);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjHARDResetYes);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjHARDResetYes);
       break;
 
     default:

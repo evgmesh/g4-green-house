@@ -35,17 +35,9 @@ createLCD ()
 void
 vDisplayTask (void *pvParams)
 {
-  //retarget_init ();
-  //DigitalIoPin relay (0, 27, DigitalIoPin::output);
-  ModbusMaster node3 (240);
-  node3.begin (9600);
-  node3.idle (idle_delay);
-  ModbusRegister RH (&node3, 256, true);
-  //relay.write (0);
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
   MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20), &mem);
-  TickType_t timestamp = 0;
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)

@@ -48,7 +48,10 @@ enum
   BACK_TO_MENU_UNFOCUS,
   BACK_TO_MENU_FOCUS,
   ALL_L_1_4d_4d,
-  ALL_L_2_2d_2d_s
+  ALL_L_2_2d_2d_s,
+  HARD_RESET,
+  HR_YES_UF_NO_F,
+  HR_YES_F_NO_UF
 
 };
 
@@ -82,8 +85,8 @@ private:
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
   void updateLCD (void);
   void readSetPointFromEEPROM (void);
-  void eraseSetPointFromEEPROM(void);
-  void saveSetPointToEEPROM(void);
+  void eraseSetPointFromEEPROM (void);
+  void saveSetPointToEEPROM (void);
 
   /** Handle the given event of the current MenuObj
    *
@@ -180,6 +183,18 @@ private:
    * @param event event of the state
    */
   void ObjValuesBackToMenu (const MenuObjEvent &event);
+
+  /** Hard reset yes
+   *
+   * @param event event of the state
+   */
+  void ObjHARDResetYes (const MenuObjEvent &event);
+
+  /** Hard reset no
+   *
+   * @param event event of the state
+   */
+  void ObjHARDResetNo (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

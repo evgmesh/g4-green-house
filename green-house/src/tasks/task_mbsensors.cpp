@@ -13,6 +13,15 @@ overwriteGlobalGHData (GH_DATA *global, GH_DATA *local)
   xQueueSend (gh_data_queue, (void *)global, 1000);
 }
 
+static void
+checkForOverflow (GH_DATA *data)
+{
+  if (data->co2_val > (float)9999)
+    {
+      data->co2_val = (float)9999;
+    }
+}
+
 extern "C"
 {
   void
@@ -59,7 +68,7 @@ vMbsensorsTask (void *pvParams)
       // Use precise read.
       sco2.read (data_local.co2_val, data_local.rhum_val, false);
 #endif
-
+      checkForOverflow(&data_local);
       overwriteGlobalGHData (gh_data_sensors, &data_local);
       vTaskDelay (1000);
     }

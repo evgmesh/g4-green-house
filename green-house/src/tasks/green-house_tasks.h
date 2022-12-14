@@ -30,4 +30,9 @@ void vRelayTask (void *pvParams);
 #define mbsensorsTASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
 void vMbsensorsTask (void *pvParams);
 
+/* MQTT SENSORS TASK DEFINES */
+#define mqttTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 6)
+#define mqttTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+void vMQTTTask (void *pvParameters);
+
 #endif /* GREEN_HOUSE_TASKS_H_ */

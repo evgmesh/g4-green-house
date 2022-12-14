@@ -82,6 +82,8 @@ private:
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
   void updateLCD (void);
   void readSetPointFromEEPROM (void);
+  void eraseSetPointFromEEPROM(void);
+  void saveSetPointToEEPROM(void);
 
   /** Handle the given event of the current MenuObj
    *

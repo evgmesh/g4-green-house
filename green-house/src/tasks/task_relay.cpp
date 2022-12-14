@@ -12,7 +12,7 @@ vRelayTask (void *pvParams)
 {
   GH_DATA *global = static_cast<GH_DATA*>(pvParams);
   Relay valve;
-  GH_DATA gh_data_relay = GH_DATA_RESET;
+  GH_DATA gh_data_relay = {GH_DATA_RESET};
   while (true)
     {
       xQueueReceive (gh_data_queue, &gh_data_relay, 1000);

@@ -24,13 +24,13 @@ main (void)
 
   create_all_queues ();
 
-  gh_common = GH_DATA_RESET;
+  gh_common = {GH_DATA_RESET};
 
   xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE,
                GH_COMMON_PARAM, mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, GH_COMMON_PARAM,
-               (tskIDLE_PRIORITY + 1UL), EMPTY_TASK_HANDLE);
+               displayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, GH_COMMON_PARAM,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);

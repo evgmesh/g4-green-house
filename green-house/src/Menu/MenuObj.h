@@ -47,8 +47,8 @@ enum
   sCURR_VALVE_FOCUS,
   BACK_TO_MENU_UNFOCUS,
   BACK_TO_MENU_FOCUS,
-  ALL_L_1_4d_4d,
-  ALL_L_2_2d_2d_s,
+  ALL_L_1_4f_4d,
+  ALL_L_2_2f_2f_s,
   HARD_RESET,
   HR_YES_UF_NO_F,
   HR_YES_F_NO_UF
@@ -61,7 +61,7 @@ typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
 class MenuObj
 {
 public:
-  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom);
+  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom, GH_DATA * gh_display, QueueHandle_t * gh_d_q);
   virtual ~MenuObj ();
 
   /**
@@ -76,9 +76,11 @@ private:
   TickType_t timestamp;
   obj_pointer current;
   LiquidCrystal *_lcd;
-  char lcd_line[2][16] = { { 0 }, { 0 } };
+  char lcd_line[2][18] = { { 0 }, { 0 } };
   Counter<uint16_t> *_ppm;
   EEPROM_Wrapper *_eeprom;
+  GH_DATA * _gh_display;
+  QueueHandle_t * _display_gh_q;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);

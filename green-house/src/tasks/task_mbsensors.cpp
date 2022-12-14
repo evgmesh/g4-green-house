@@ -10,7 +10,7 @@ overwriteGlobalGHData (GH_DATA *global, GH_DATA *local)
   global->co2_val = local->co2_val;
   global->rhum_val = local->rhum_val;
   global->temp_val = local->temp_val;
-  xQueueSend(gh_data_queue, (void*)global, 1000);
+  xQueueSend (gh_data_queue, (void *)global, 1000);
 }
 
 extern "C"
@@ -60,7 +60,7 @@ vMbsensorsTask (void *pvParams)
       sco2.read (data_local.co2_val, data_local.rhum_val, false);
 #endif
 
-      overwriteGlobalGHData(gh_data_sensors, &data_local);
+      overwriteGlobalGHData (gh_data_sensors, &data_local);
       vTaskDelay (1000);
     }
 }

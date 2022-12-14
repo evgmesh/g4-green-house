@@ -7,19 +7,22 @@
 
 #include "MenuObj.h"
 
-const char *MENU_OBJ_LINES[] = {
-  "[SET CO2 LVL]",   " SET CO2 LVL ",   "[SHOW VALUES]",  " SHOW VALUES ",
-  "[SHOW ALL]",      " SHOW ALL",       "[HARD RESET]",   " HARD RESET ",
-  "SET [%4d] PPM",   "SET  %4d  PPM",   "SET <%4d> PPM",  " BACK     SAVE ",
-  "[BACK]    SAVE ", " BACK    [SAVE]", "  CO2:%4.0f PPM ", "> CO2:%4.0f PPM",
-  "  RH:%4.1f%\%",      "> RH:%4.1f%\%",       "  TEMP: %4.1f C ",   "> TEMP: %4.1f C",
-  "  SP:%4d PPM ",   "> SP:%4d PPM",    "  VALVE:%s ",   "> VALVE:%s",
-  " BACK TO MENU ",  "[BACK TO MENU]",  "CO2:%4.0f SP:%4d",  "H:%3.0f T:%3.0f V:%d",
-  "   HARD RESET  ", " YES      [NO]",  "[YES]      NO "
-};
+const char *MENU_OBJ_LINES[]
+    = { "[SET CO2 LVL]",        " SET CO2 LVL ",   "[SHOW VALUES]",
+        " SHOW VALUES ",        "[SHOW ALL]",      " SHOW ALL",
+        "[HARD RESET]",         " HARD RESET ",    "SET [%4d] PPM",
+        "SET  %4d  PPM",        "SET <%4d> PPM",   " BACK     SAVE ",
+        "[BACK]    SAVE ",      " BACK    [SAVE]", "  CO2:%4.0f PPM ",
+        "> CO2:%4.0f PPM",      "  RH:%4.1f%\%",   "> RH:%4.1f%\%",
+        "  TEMP: %4.1f C ",     "> TEMP: %4.1f C", "  SP:%4d PPM ",
+        "> SP:%4d PPM",         "  VALVE:%s ",     "> VALVE:%s",
+        " BACK TO MENU ",       "[BACK TO MENU]",  "CO2:%4.0f SP:%4d",
+        "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ", " YES      [NO]",
+        "[YES]      NO ",       "Launching ...",   " Moment please " };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
-                  EEPROM_Wrapper *eeprom, GH_DATA * gh_display, QueueHandle_t * gh_d_q)
+                  EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
+                  QueueHandle_t *gh_d_q)
 {
   timestamp = 0;
   _eeprom = eeprom;
@@ -27,7 +30,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _ppm = ppm;
   _gh_display = gh_display;
   _display_gh_q = gh_d_q;
-  current = &MenuObj::ObjShowALL;
+  current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
@@ -78,6 +81,19 @@ MenuObj::HandleRotaryAction (RotaryAction action)
         {
           HandleObj (MenuObjEvent (MenuObjEvent::eClick));
           timestamp = current_timestamp;
+        }
+    case ROTARY_ACTION::ROTARY_IDLE:
+      if (current == &MenuObj::ObjWait)
+        {
+          SetEvent (&MenuObj::ObjShowALL);
+        }
+      if (current == &MenuObj::ObjShowALL || current == &MenuObj::ObjValuesCO
+          || current == &MenuObj::ObjValuesRH
+          || current == &MenuObj::ObjValuesSP
+          || current == &MenuObj::ObjValuesTEMP
+          || current == &MenuObj::ObjValuesVALVE)
+        {
+          HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
         }
       break;
     default:
@@ -190,7 +206,8 @@ MenuObj::ObjChangePPMValue (const MenuObjEvent &event)
       SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
-      xQueueSend(*_display_gh_q, (void*)_gh_display, 0);
+      _gh_display->set_point = _ppm->getCurrent();
+      xQueueSend (*_display_gh_q, (void *)_gh_display, 0);
       SetEvent (&MenuObj::ObjSetPPM);
       break;
     case MenuObjEvent::eRollClockWise:
@@ -319,7 +336,8 @@ MenuObj::ObjShowALL (const MenuObjEvent &event)
     case MenuObjEvent::eFocus:
       SetLineToFMT (1, MENU_OBJ_LINES[ALL_L_1_4f_4d], _gh_display->co2_val,
                     _ppm->getCurrent ());
-      SetLineToFMT (2, MENU_OBJ_LINES[ALL_L_2_2f_2f_s], _gh_display->rhum_val, _gh_display->temp_val, (_gh_display->valve_open) ? 1 : 0);
+      SetLineToFMT (2, MENU_OBJ_LINES[ALL_L_2_2f_2f_s], _gh_display->rhum_val,
+                    _gh_display->temp_val, (_gh_display->valve_open) ? 1 : 0);
       break;
     case MenuObjEvent::eUnFocus:
       break;
@@ -423,7 +441,8 @@ MenuObj::ObjValuesCO (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToFMT (1, MENU_OBJ_LINES[CURR_CO2_FOCUS], _gh_display->co2_val);
-      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS], _gh_display->rhum_val);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS],
+                    _gh_display->rhum_val);
       break;
     case MenuObjEvent::eUnFocus:
       SetLineToFMT (1, MENU_OBJ_LINES[CURR_CO2_UNFOCUS], _gh_display->co2_val);
@@ -452,7 +471,8 @@ MenuObj::ObjValuesRH (const MenuObjEvent &event)
       SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_FOCUS], _gh_display->rhum_val);
       break;
     case MenuObjEvent::eUnFocus:
-      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS], _gh_display->rhum_val);
+      SetLineToFMT (2, MENU_OBJ_LINES[CURR_HUM_UNFOCUS],
+                    _gh_display->rhum_val);
       break;
     case MenuObjEvent::eClick:
       break;
@@ -478,7 +498,8 @@ MenuObj::ObjValuesTEMP (const MenuObjEvent &event)
       SetLineToFMT (2, MENU_OBJ_LINES[CURR_SP_UNFOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eUnFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS], _gh_display->temp_val);
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS],
+                    _gh_display->temp_val);
       break;
     case MenuObjEvent::eClick:
       break;
@@ -500,7 +521,8 @@ MenuObj::ObjValuesSP (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS], _gh_display->temp_val);
+      SetLineToFMT (1, MENU_OBJ_LINES[CURR_TEMP_UNFOCUS],
+                    _gh_display->temp_val);
       SetLineToFMT (2, MENU_OBJ_LINES[CURR_SP_FOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eUnFocus:
@@ -526,11 +548,13 @@ MenuObj::ObjValuesVALVE (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_FOCUS], (_gh_display->valve_open) ? "ON" : "OFF");
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_FOCUS],
+                    (_gh_display->valve_open) ? "ON" : "OFF");
       SetLineToConst (2, MENU_OBJ_LINES[BACK_TO_MENU_UNFOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS], (_gh_display->valve_open) ? "ON" : "OFF");
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS],
+                    (_gh_display->valve_open) ? "ON" : "OFF");
       break;
     case MenuObjEvent::eClick:
       break;
@@ -552,7 +576,8 @@ MenuObj::ObjValuesBackToMenu (const MenuObjEvent &event)
   switch (event.type)
     {
     case MenuObjEvent::eFocus:
-      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS], (_gh_display->valve_open) ? "ON" : "OFF");
+      SetLineToFMT (1, MENU_OBJ_LINES[sCURR_VALVE_UNFOCUS],
+                    (_gh_display->valve_open) ? "ON" : "OFF");
       SetLineToConst (2, MENU_OBJ_LINES[BACK_TO_MENU_FOCUS]);
       break;
     case MenuObjEvent::eUnFocus:
@@ -566,6 +591,29 @@ MenuObj::ObjValuesBackToMenu (const MenuObjEvent &event)
       break;
     case MenuObjEvent::eRollCClockWise:
       SetEvent (&MenuObj::ObjValuesVALVE);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjWait (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[WAIT_1]);
+      SetLineToConst (2, MENU_OBJ_LINES[WAIT_2]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      break;
+    case MenuObjEvent::eRollCClockWise:
       break;
 
     default:

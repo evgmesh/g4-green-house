@@ -37,8 +37,8 @@ main (void)
   xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
-  xTaskCreate (vMQTTTask, "MQTTTask", mqttTASK_STACKSIZE, NULL,
-               mqttTASK_PRIORITY, EMPTY_TASK_HANDLE);
+//  xTaskCreate (vMQTTTask, "MQTTTask", mqttTASK_STACKSIZE, NULL,
+//               mqttTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   /* Start the scheduler */
   vTaskStartScheduler ();

@@ -29,7 +29,7 @@ vButtonTask (void *pvParams)
 {
   Rotary rotor (&queue);
   rot = &rotor;
-  queue = xQueueCreate (100, sizeof (RotaryAction));
+  //queue = xQueueCreate (100, sizeof (RotaryAction));
   vQueueAddToRegistry (queue, "ButtonsQueue");
   while (true)
     {

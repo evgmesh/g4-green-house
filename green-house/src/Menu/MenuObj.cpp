@@ -24,7 +24,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _eeprom = eeprom;
   _lcd = lcd;
   _ppm = ppm;
-  current = &MenuObj::ObjSetCOLevel;
+  current = &MenuObj::ObjShowALL;
   readSetPointFromEEPROM ();
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }

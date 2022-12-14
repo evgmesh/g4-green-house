@@ -23,7 +23,7 @@ main (void)
 
   retarget_init();
 
-  sensors_q = xQueueCreate(1, sizeof(GH_DATA));
+  create_all_queues();
   
   xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE, NULL,
                mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);

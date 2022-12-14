@@ -53,4 +53,7 @@ extern QueueHandle_t sensors_q;
 extern Rotary *rot;
 extern GH_DATA gh_common;
 
+/* global functions */
+void create_all_queues();
+
 #endif /* COMMON_VALUES_H_ */

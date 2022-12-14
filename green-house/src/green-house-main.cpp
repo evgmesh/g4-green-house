@@ -11,7 +11,6 @@
 #include "common_values.h"
 #include "tasks/green-house_tasks.h"
 
-
 int
 main (void)
 {
@@ -21,21 +20,23 @@ main (void)
 
   heap_monitor_setup ();
 
-  retarget_init();
+  retarget_init ();
 
-  create_all_queues();
-  
-  xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE, NULL,
-               mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);
+  create_all_queues ();
 
-  xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, NULL,
+  gh_common = GH_DATA_RESET;
+
+  xTaskCreate (vMbsensorsTask, "vMbsensorsTask", mbsensorsTASK_STACKSIZE,
+               GH_COMMON_PARAM, mbsensorsTASK_PRIORITY, EMPTY_TASK_HANDLE);
+
+  xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, GH_COMMON_PARAM,
                (tskIDLE_PRIORITY + 1UL), EMPTY_TASK_HANDLE);
 
-  xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
+  xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, GH_COMMON_PARAM,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
-//  xTaskCreate (vMQTTTask, "MQTTTask", mqttTASK_STACKSIZE, NULL,
-//               mqttTASK_PRIORITY, EMPTY_TASK_HANDLE);
+  //  xTaskCreate (vMQTTTask, "MQTTTask", mqttTASK_STACKSIZE, NULL,
+  //               mqttTASK_PRIORITY, EMPTY_TASK_HANDLE);
 
   /* Start the scheduler */
   vTaskStartScheduler ();

@@ -35,6 +35,7 @@ createLCD ()
 void
 vDisplayTask (void *pvParams)
 {
+  GH_DATA *gh_data_display = static_cast<GH_DATA *> (pvParams);
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
   MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20), &mem);

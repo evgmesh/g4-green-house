@@ -14,6 +14,11 @@
 #include "common_values.h"
 
 #define EMPTY_TASK_HANDLE (TaskHandle_t *)NULL
+#define GH_COMMON_PARAM (void *)&gh_common
+#define GH_DATA_RESET                                                         \
+  {                                                                           \
+    0, 0, 0, 0, false                                                         \
+  }
 
 /* DISPLAY TASK DEFINES */
 #define displayTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)

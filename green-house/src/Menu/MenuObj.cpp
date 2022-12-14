@@ -24,12 +24,22 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _lcd = lcd;
   _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;
+  readSetPointFromEEPROM();
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
 MenuObj::~MenuObj ()
 {
   // TODO Auto-generated destructor stub
+}
+
+void
+MenuObj::readSetPointFromEEPROM (void)
+{
+  uint16_t *data = (uint16_t*)_eeprom->read_from(EEPROM_ADDRESS, sizeof(uint16_t));
+  if((*data) > 150 && (*data) < 1024){
+	  _ppm->setCurrent(*data);
+  }
 }
 
 void

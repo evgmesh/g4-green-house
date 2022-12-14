@@ -24,7 +24,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _lcd = lcd;
   _ppm = ppm;
   current = &MenuObj::ObjSetCOLevel;
-  readSetPointFromEEPROM();
+  readSetPointFromEEPROM ();
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
@@ -36,10 +36,25 @@ MenuObj::~MenuObj ()
 void
 MenuObj::readSetPointFromEEPROM (void)
 {
-  uint16_t *data = (uint16_t*)_eeprom->read_from(EEPROM_ADDRESS, sizeof(uint16_t));
-  if((*data) > 150 && (*data) < 1024){
-	  _ppm->setCurrent(*data);
-  }
+  uint16_t *data
+      = (uint16_t *)_eeprom->read_from (EEPROM_ADDRESS, sizeof (uint16_t));
+  if ((*data) > 150 && (*data) < 1024)
+    {
+      _ppm->setCurrent (*data);
+    }
+}
+
+void
+MenuObj::eraseSetPointFromEEPROM (void)
+{
+  _ppm->setCurrent (0);
+  saveSetPointToEEPROM ();
+}
+void
+MenuObj::saveSetPointToEEPROM (void)
+{
+  uint16_t data = _ppm->getCurrent ();
+  _eeprom->write_to (EEPROM_ADDRESS, &data, sizeof (uint16_t));
 }
 
 void
@@ -218,7 +233,7 @@ MenuObj::ObjSave (const MenuObjEvent &event)
       SetLineToConst (2, MENU_OBJ_LINES[BACK_UNFOCUS_SAVE_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
-      // TODO Save to EEPROM
+      saveSetPointToEEPROM();
       SetEvent (&MenuObj::ObjSetCOLevel);
       break;
     case MenuObjEvent::eRollClockWise:
@@ -324,7 +339,7 @@ MenuObj::ObjReset (const MenuObjEvent &event)
       SetLineToConst (2, MENU_OBJ_LINES[SHOW_ALL_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
-      // TODO EEPROM erase
+      eraseSetPointFromEEPROM();
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjSetCOLevel);

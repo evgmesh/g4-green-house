@@ -21,6 +21,7 @@ const char *MENU_OBJ_LINES[] = {
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom)
 {
+  timestamp = 0;
   _eeprom = eeprom;
   _lcd = lcd;
   _ppm = ppm;
@@ -61,6 +62,7 @@ MenuObj::saveSetPointToEEPROM (void)
 void
 MenuObj::HandleRotaryAction (RotaryAction action)
 {
+  TickType_t current_timestamp = xTaskGetTickCount ();
   switch (action)
     {
     case ROTARY_ACTION::ROTARY_CLOCKWISE:
@@ -70,7 +72,11 @@ MenuObj::HandleRotaryAction (RotaryAction action)
       HandleObj (MenuObjEvent (MenuObjEvent::eRollCClockWise));
       break;
     case ROTARY_ACTION::ROTARY_PRESS:
-      HandleObj (MenuObjEvent (MenuObjEvent::eClick));
+      if (current_timestamp - timestamp > 200)
+        {
+          HandleObj (MenuObjEvent (MenuObjEvent::eClick));
+          timestamp = current_timestamp;
+        }
       break;
     default:
       break;

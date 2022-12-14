@@ -73,6 +73,7 @@ public:
 
 private:
   /* Variables and objects */
+  TickType_t timestamp;
   obj_pointer current;
   LiquidCrystal *_lcd;
   char lcd_line[2][16] = { { 0 }, { 0 } };

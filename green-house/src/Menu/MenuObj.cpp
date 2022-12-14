@@ -32,7 +32,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _display_gh_q = gh_d_q;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
-  _gh_display->set_point = _ppm->getCurrent();
+
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
@@ -49,6 +49,7 @@ MenuObj::readSetPointFromEEPROM (void)
   if ((*data) > 200 && (*data) < 9999)
     {
       _ppm->setCurrent (*data);
+      _gh_display->set_point = _ppm->getCurrent();
     }
 }
 

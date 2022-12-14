@@ -16,5 +16,5 @@ void
 create_all_queues ()
 {
   action_q = xQueueCreate (100, sizeof (RotaryAction));
-  gh_data_queue = xQueueCreate (4, sizeof (GH_DATA));
+  gh_data_queue = xQueueCreate (1, sizeof (GH_DATA));
 }

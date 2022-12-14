@@ -10,13 +10,16 @@
 void
 vRelayTask (void *pvParams)
 {
-  set_point_queue = xQueueCreate (1, sizeof (uint32_t));
-  Relay valve (&set_point_queue);
+  GH_DATA *sensors_actuators = static_cast<GH_DATA *>(pvParams);
+  Relay valve;
+  uint32_t point = 0;
   while (true)
     {
-      if (!valve.peekForSetPoint ())
-        {
-          vTaskDelay (1000);
-        }
+      xQueueReceive(set_point_queue, &point, 1000);
+
+      if(sensors_actuators->co2_val < (float)point)
+        valve.open();
+      else
+        valve.close();
     }
 }

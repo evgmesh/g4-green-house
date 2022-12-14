@@ -17,6 +17,8 @@
 #ifndef MENU_MENUOBJ_H_
 #define MENU_MENUOBJ_H_
 
+#define EEPROM_ADDRESS 0x00000100
+
 enum
 {
   CO2_FOCUS,
@@ -79,6 +81,7 @@ private:
   void SetLineToConst (uint8_t line, const char *to);
   void SetLineToFMT (uint8_t line, const char *fmt, ...);
   void updateLCD (void);
+  void readSetPointFromEEPROM (void);
 
   /** Handle the given event of the current MenuObj
    *

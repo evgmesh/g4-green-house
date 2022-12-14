@@ -22,7 +22,7 @@
 void vButtonTask (void *pvParams);
 
 /* DISPLAY TASK DEFINES */
-#define displayTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 4)
+#define displayTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 10)
 #define displayTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
 void vDisplayTask (void *pvParams);
 

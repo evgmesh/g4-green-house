@@ -48,7 +48,6 @@ void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
 
 	  /* Leave the connection idle for some time. */
 	  LogInfo (("Keeping Connection Idle...\r\n"));
-	  vTaskDelay (DELAY_BETWEEN_PUBLISHES);
 }
 
 

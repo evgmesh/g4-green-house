@@ -1,19 +1,33 @@
 
 #include "green-house_tasks.h"
+#define mqttTOPIC 		"channels/1955513/publish"
+#define mqttMESSAGE 	"field1=%4.0f&field2=%4.1f&field3=%3.1f&field4=%d&field5=%u"
+#define BUFSIZE			100
 
-void vMQTTTask (void *pvParameters) {
-	GH_DATA buffer;
-	char buf[256];
-	int rc = 0;
-	std::string topic("channels/1955513/publish");
-	std::string message("field1=399&field2=399&field3=399&field4=0&field5=100&created_at=");
+void printFormat(char *, int, const char *, ...);
+
+void vMQTTTask(void *pvParameters)
+{
+	GH_DATA dataSet;
 	mqtt mqtt;
-	while(true) {
-		xQueuePeek(sensors_q, &buffer, portMAX_DELAY);
-		rc = snprintf(buf, 256, "field1=%f&field2=%f&field3=%f&field4=1&field5=90&created_at=",
-			buffer.co2_val, buffer.rhum_val, buffer.temp_val);
-		std::string mess = buf;
-		printf("%s\n", mess.c_str());
-		mqtt.publish(topic, mess);
+	char buffer[BUFSIZE];
+	while (true)
+	{
+		xQueuePeek(sensors_q, &dataSet, portMAX_DELAY);
+		printFormat(buffer, BUFSIZE, mqttMESSAGE,
+					dataSet.co2_val, dataSet.rhum_val,
+					dataSet.temp_val, (int)dataSet.valve_open,
+					dataSet.set_point);
+		std::string message = buffer;
+		mqtt.publish(mqttTOPIC, message);
+		printf("%s\n", message.c_str());
 	}
+}
+
+void printFormat(char *buf, int size, const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buf, size, fmt, args);
+	va_end(args);
 }

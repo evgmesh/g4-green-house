@@ -9,14 +9,12 @@
 
 /* global variables */
 QueueHandle_t action_q;
-QueueHandle_t set_point_queue;
-QueueHandle_t sensors_q;
-extern GH_DATA gh_common = { 0, 0, 0, 0, false };
+QueueHandle_t gh_data_queue;
+GH_DATA gh_common;
 
 void
-create_all_queues()
+create_all_queues ()
 {
   action_q = xQueueCreate (100, sizeof (RotaryAction));
-  set_point_queue = xQueueCreate (1, sizeof (uint32_t));
-  sensors_q = xQueueCreate(1, sizeof(GH_DATA));
+  gh_data_queue = xQueueCreate (4, sizeof (GH_DATA));
 }

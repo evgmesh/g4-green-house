@@ -48,8 +48,7 @@ typedef uint8_t RotaryAction;
 
 /* global variables */
 extern QueueHandle_t action_q;
-extern QueueHandle_t set_point_queue;
-extern QueueHandle_t sensors_q;
+extern QueueHandle_t gh_data_queue;
 extern Rotary *rot;
 extern GH_DATA gh_common;
 

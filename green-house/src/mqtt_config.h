@@ -17,7 +17,6 @@
  * @brief The port to use for the demo.
  */
 #define MQTT_BROKER_PORT		  1883
-#define mqttTOPIC  			"channels/1955513/publish"
 #define WIFI_SSID	    		 "SmartIotMQTT"
 #define WIFI_PASS       		 "SmartIot"
 /*
@@ -26,8 +25,8 @@
 #if SMARTIOTMQTT
 #define CLIENT_IDENTIFIER			"GH-MQTT-G4"
 #define MQTT_BROKER_ENDPOINT	 "192.168.1.136"
-#define BROKER_USER_NAME    "group4"
-#define BROKER_PASSWORD		"12345678"
+#define BROKER_USER_NAME    	 "group4"
+#define BROKER_PASSWORD			 "12345678"
 
 #elif DANIIL
 #define CLIENT_IDENTIFIER			"GH-MQTT-G4"
@@ -38,8 +37,8 @@
 #define BROKER_PASSWORD		"12345678"
 
 #elif GREENHOUSEDEMO
-#define BROKER_USER_NAME    "DCAmDzgFFhoKKy8kCBw3NQA"
-#define BROKER_PASSWORD		"qKxqzEzD+xMf2LMg0SU24WYk"
+#define BROKER_USER_NAME    	 "DCAmDzgFFhoKKy8kCBw3NQA"
+#define BROKER_PASSWORD			 "qKxqzEzD+xMf2LMg0SU24WYk"
 #define CLIENT_IDENTIFIER		 "DCAmDzgFFhoKKy8kCBw3NQA"
 #define MQTT_BROKER_ENDPOINT	 "mqtt3.thingspeak.com"
 

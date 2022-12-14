@@ -42,7 +42,7 @@ vDisplayTask (void *pvParams)
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)
     {
-      if (xQueueReceive (queue, &rotary_action, portMAX_DELAY))
+      if (xQueueReceive (action_q, &rotary_action, portMAX_DELAY))
         {
           menu.HandleRotaryAction (rotary_action);
         }

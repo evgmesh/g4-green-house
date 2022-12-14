@@ -47,13 +47,13 @@ typedef struct _green_house
 typedef uint8_t RotaryAction;
 
 /* global variables */
-extern QueueHandle_t queue;
+extern QueueHandle_t action_q;
 extern QueueHandle_t set_point_queue;
 extern QueueHandle_t sensors_q;
 extern Rotary *rot;
 extern GH_DATA gh_common;
 
 /* global functions */
-void create_all_queues();
+void create_all_queues ();
 
 #endif /* COMMON_VALUES_H_ */

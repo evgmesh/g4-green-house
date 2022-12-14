@@ -31,9 +31,6 @@ main (void)
   xTaskCreate (vDisplayTask, "LCD", displayTASK_STACKSIZE, NULL,
                (tskIDLE_PRIORITY + 1UL), EMPTY_TASK_HANDLE);
 
-  xTaskCreate (vButtonTask, "Rotary", buttonTASK_STACKSIZE, NULL,
-               buttonTASK_PRIORITY, EMPTY_TASK_HANDLE);
-
   xTaskCreate (vRelayTask, "Relay", relayTASK_STACKSIZE, NULL,
                relayTASK_PRIORITY, EMPTY_TASK_HANDLE);
 

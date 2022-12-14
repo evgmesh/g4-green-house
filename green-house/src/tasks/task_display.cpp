@@ -52,18 +52,7 @@ vDisplayTask (void *pvParams)
     {
       if (xQueueReceive (queue, &rotary_action, portMAX_DELAY))
         {
-          if (rotary_action == ROTARY_ACTION::ROTARY_PRESS)
-            {
-              TickType_t current_timestamp = xTaskGetTickCount ();
-              if (current_timestamp - timestamp > 10)
-                {
-                  menu.HandleRotaryAction (rotary_action);
-                  timestamp = current_timestamp;
-                }
-            }
-          else
-            menu.HandleRotaryAction (rotary_action);
+          menu.HandleRotaryAction (rotary_action);
         }
-      //      vTaskDelay (2000);
     }
 }

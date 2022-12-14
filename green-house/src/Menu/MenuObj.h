@@ -51,7 +51,9 @@ enum
   ALL_L_2_2f_2f_s,
   HARD_RESET,
   HR_YES_UF_NO_F,
-  HR_YES_F_NO_UF
+  HR_YES_F_NO_UF,
+  WAIT_1,
+  WAIT_2
 
 };
 
@@ -61,7 +63,8 @@ typedef void (MenuObj::*obj_pointer) (const MenuObjEvent &);
 class MenuObj
 {
 public:
-  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom, GH_DATA * gh_display, QueueHandle_t * gh_d_q);
+  MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom,
+           GH_DATA *gh_display, QueueHandle_t *gh_d_q);
   virtual ~MenuObj ();
 
   /**
@@ -79,8 +82,8 @@ private:
   char lcd_line[2][18] = { { 0 }, { 0 } };
   Counter<uint16_t> *_ppm;
   EEPROM_Wrapper *_eeprom;
-  GH_DATA * _gh_display;
-  QueueHandle_t * _display_gh_q;
+  GH_DATA *_gh_display;
+  QueueHandle_t *_display_gh_q;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);
@@ -198,6 +201,12 @@ private:
    * @param event event of the state
    */
   void ObjHARDResetNo (const MenuObjEvent &event);
+
+  /** Waiting for values
+   *
+   * @param event event of the state
+   */
+  void ObjWait (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

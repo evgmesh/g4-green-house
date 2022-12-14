@@ -38,14 +38,19 @@ vDisplayTask (void *pvParams)
   GH_DATA *gh_data_display = static_cast<GH_DATA *> (pvParams);
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
-  MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20), &mem, gh_data_display, &action_q);
+  MenuObj menu (lcd, new Counter<uint16_t> (150, 1024, 20), &mem,
+                gh_data_display, &action_q);
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)
     {
-      if (xQueueReceive (action_q, &rotary_action, portMAX_DELAY))
+      if (xQueueReceive (action_q, &rotary_action, 3000))
         {
           menu.HandleRotaryAction (rotary_action);
+        }
+      else
+        {
+          menu.HandleRotaryAction (ROTARY_ACTION::ROTARY_IDLE);
         }
     }
 }

@@ -49,6 +49,7 @@ MenuObj::readSetPointFromEEPROM (void)
   if ((*data) > 200 && (*data) < 9999)
     {
       _ppm->setCurrent (*data);
+      _gh_display->set_point = _ppm->getCurrent();
     }
 }
 

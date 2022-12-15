@@ -11,10 +11,13 @@ void
 vMQTTTask (void *pvParameters)
 {
   GH_DATA *dataSet = static_cast<GH_DATA *> (pvParameters);
+  GH_DATA data_q;
   mqtt mqtt;
   char buffer[BUFSIZE];
   while (true)
     {
+      xQueueReceive(gh_data_queue, (void*)&data_q, DELAY_BETWEEN_PUBLISHES);
+
       printFormat (buffer, BUFSIZE, mqttMESSAGE, dataSet->co2_val,
                    dataSet->rhum_val, dataSet->temp_val,
                    (int)dataSet->valve_open, dataSet->set_point);

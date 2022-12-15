@@ -11,12 +11,10 @@
 QueueHandle_t action_q;
 QueueHandle_t gh_data_queue;
 GH_DATA gh_common;
-SemaphoreHandle_t valve_opened;
 
 void
 create_all_queues ()
 {
   action_q = xQueueCreate (100, sizeof (RotaryAction));
   gh_data_queue = xQueueCreate (4, sizeof (GH_DATA));
-
 }

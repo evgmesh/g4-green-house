@@ -22,7 +22,8 @@ vRelayTask (void *pvParams)
 
       if ((global->co2_val + 50 < (float)global->set_point)
           && (xTaskGetTickCount ()) - last_opening > 30000)
-        {          last_opening = xTaskGetTickCount ();
+        {          
+          last_opening = xTaskGetTickCount ();
           valve.open ();
           global->valve_open = true;
           xQueueSendToBack(action_q, (void*)&message, 0);

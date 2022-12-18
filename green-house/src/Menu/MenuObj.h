@@ -56,7 +56,9 @@ enum
   HR_YES_UF_NO_F,
   HR_YES_F_NO_UF,
   WAIT_1,
-  WAIT_2
+  WAIT_2,
+  SET_NETWORK_UNFOCUS,
+  SET_NETWORK_FOCUS
 
 };
 
@@ -97,7 +99,7 @@ private:
   void readSetPointFromEEPROM (void);
   void eraseSetPointFromEEPROM (void);
   void saveSetPointToEEPROM (void);
-  void readNetworkDataFromEEPROM (void);
+  bool readNetworkDataFromEEPROM (void);
   void eraseNetworkDatFromEEPROM (void);
   void saveNetworkDatToEEPROM (void);
 
@@ -214,6 +216,12 @@ private:
    * @param event event of the state
    */
   void ObjWait (const MenuObjEvent &event);
+
+  /** Setting network button
+   *
+   * @param event event of the state
+   */
+  void ObjSetNetwork (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

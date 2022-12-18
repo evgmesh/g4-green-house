@@ -18,7 +18,8 @@ const char *MENU_OBJ_LINES[]
         "> SP:%4d PPM",         "  VALVE:%s ",     "> VALVE:%s",
         " BACK TO MENU ",       "[BACK TO MENU]",  "CO2:%4.0f SP:%4d",
         "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ", " YES      [NO]",
-        "[YES]      NO ",       "Launching ...",   " Moment please " };
+        "[YES]      NO ",       "Launching ...",   " Moment please ",
+        " SET NETWORK ",        "[SET NETWORK]" };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
@@ -33,7 +34,10 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _network = network;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
-
+  if (!readNetworkDataFromEEPROM ())
+    {
+      current = &MenuObj::ObjSetNetwork;
+    }
   HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
@@ -67,15 +71,17 @@ MenuObj::saveSetPointToEEPROM (void)
   _eeprom->write_to (SETPOINT_EEPROM_ADDRESS, &data, SETPOINT_SIZE);
 }
 
-void
+bool
 MenuObj::readNetworkDataFromEEPROM (void)
 {
   ND *data = (ND *)_eeprom->read_from (ND_EEPROM_ADDRESS, ND_SIZE);
   if (data->ssid[0] && data->password[0])
     {
-      memcpy(data->ssid, _network->ssid, ND_SSID_MAX_LENGTH);
-      memcpy(data->password, _network->password, ND_PASSWORD_MAX_LENGTH);
+      memcpy (data->ssid, _network->ssid, ND_SSID_MAX_LENGTH);
+      memcpy (data->password, _network->password, ND_PASSWORD_MAX_LENGTH);
+      return true;
     }
+  return false;
 }
 
 void
@@ -398,10 +404,36 @@ MenuObj::ObjReset (const MenuObjEvent &event)
       SetEvent (&MenuObj::ObjHARDResetNo);
       break;
     case MenuObjEvent::eRollClockWise:
-      SetEvent (&MenuObj::ObjSetCOLevel);
+      SetEvent (&MenuObj::ObjSetNetwork);
       break;
     case MenuObjEvent::eRollCClockWise:
       SetEvent (&MenuObj::ObjShowValuesMax);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjSetNetwork (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[SET_NETWORK_FOCUS]);
+      SetLineToConst (2, "");
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[SET_NETWORK_UNFOCUS]);
+      break;
+    case MenuObjEvent::eClick:
+      break;
+    case MenuObjEvent::eRollClockWise:
+      SetEvent (&MenuObj::ObjSetCOLevel);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      SetEvent (&MenuObj::ObjReset);
       break;
 
     default:

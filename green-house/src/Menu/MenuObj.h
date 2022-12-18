@@ -64,7 +64,7 @@ class MenuObj
 {
 public:
   MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom,
-           GH_DATA *gh_display, QueueHandle_t *gh_d_q);
+           GH_DATA *gh_display, SemaphoreHandle_t *sp_sig);
   virtual ~MenuObj ();
 
   /**
@@ -83,7 +83,7 @@ private:
   Counter<uint16_t> *_ppm;
   EEPROM_Wrapper *_eeprom;
   GH_DATA *_gh_display;
-  QueueHandle_t *_display_gh_q;
+  SemaphoreHandle_t *_set_point_sig;
 
   /* Methods */
   void SetEvent (obj_pointer newevent);

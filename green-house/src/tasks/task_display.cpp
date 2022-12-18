@@ -39,7 +39,7 @@ vDisplayTask (void *pvParams)
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
   MenuObj menu (lcd, new Counter<uint16_t> (200, 9999, 10), &mem,
-                gh_data_display, &gh_data_queue);
+                gh_data_display, &publish_signal);
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)

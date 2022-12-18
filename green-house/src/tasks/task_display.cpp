@@ -44,13 +44,10 @@ vDisplayTask (void *pvParams)
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)
     {
-      if (xQueueReceive (action_q, &rotary_action, 3000))
+      if (!xQueueReceive (action_q, &rotary_action, 3000))
         {
-          menu.HandleRotaryAction (rotary_action);
+          rotary_action = ROTARY_ACTION::ROTARY_IDLE;
         }
-      else
-        {
-          menu.HandleRotaryAction (ROTARY_ACTION::ROTARY_IDLE);
-        }
+      menu.HandleRotaryAction (rotary_action);
     }
 }

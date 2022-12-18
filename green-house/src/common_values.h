@@ -47,12 +47,11 @@ typedef struct _green_house
 typedef uint8_t RotaryAction;
 #define GH_COMMON_PARAM (void *)&gh_common
 
-#define GH_DATA_RESET   0, 0, 0, 0, false
-
+#define GH_DATA_RESET 0, 0, 0, 0, false
 
 /* global variables */
 extern QueueHandle_t action_q;
-extern QueueHandle_t gh_data_queue;
+extern SemaphoreHandle_t publish_signal;
 extern Rotary *rot;
 extern GH_DATA gh_common;
 

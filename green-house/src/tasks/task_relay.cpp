@@ -5,8 +5,9 @@
  *      Author: tylen
  */
 
-#include "green-house_tasks.h"
 #include "Rotary.h"
+#include "green-house_tasks.h"
+
 
 void
 vRelayTask (void *pvParams)
@@ -22,23 +23,25 @@ vRelayTask (void *pvParams)
 
       if ((global->co2_val + 50 < (float)global->set_point)
           && (xTaskGetTickCount ()) - last_opening > 30000)
-        {          last_opening = xTaskGetTickCount ();
+        {
+          last_opening = xTaskGetTickCount ();
           valve.open ();
           global->valve_open = true;
-          xQueueSendToBack(action_q, (void*)&message, 0);
-          xQueueSendToBack(gh_data_queue, (void*)&global, 0);
-          vTaskDelay(2000);
+          xQueueSendToBack (action_q, (void *)&message, 0);
+          xSemaphoreGive (publish_signal);
+          vTaskDelay (2000);
           valve.close ();
           global->valve_open = false;
-          xQueueSendToBack(action_q, (void*)&message, 0);
-          xQueueSendToBack(gh_data_queue, (void*)&global, 0);
+          xQueueSendToBack (action_q, (void *)&message, 0);
+          xSemaphoreGive (publish_signal);
         }
-//      else if ((global->co2_val >= (float)global->set_point - 100) && (xTaskGetTickCount ()) - last_closing > 2000)
-//        {
-//          last_closing = xTaskGetTickCount ();
-//          valve.close ();
-//          global->valve_open = false;
-//        }
+      //      else if ((global->co2_val >= (float)global->set_point - 100) &&
+      //      (xTaskGetTickCount ()) - last_closing > 2000)
+      //        {
+      //          last_closing = xTaskGetTickCount ();
+      //          valve.close ();
+      //          global->valve_open = false;
+      //        }
       vTaskDelay (100);
     }
 }

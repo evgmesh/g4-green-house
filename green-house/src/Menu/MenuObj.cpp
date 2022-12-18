@@ -22,14 +22,14 @@ const char *MENU_OBJ_LINES[]
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
-                  QueueHandle_t *gh_d_q)
+                  SemaphoreHandle_t *sp_sig)
 {
   timestamp = 0;
   _eeprom = eeprom;
   _lcd = lcd;
   _ppm = ppm;
   _gh_display = gh_display;
-  _display_gh_q = gh_d_q;
+  _set_point_sig = sp_sig;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
 
@@ -209,7 +209,7 @@ MenuObj::ObjChangePPMValue (const MenuObjEvent &event)
       break;
     case MenuObjEvent::eClick:
       _gh_display->set_point = _ppm->getCurrent();
-      xQueueSend (*_display_gh_q, (void *)_gh_display, 0);
+      xSemaphoreGive(*_set_point_sig);
       SetEvent (&MenuObj::ObjSetPPM);
       break;
     case MenuObjEvent::eRollClockWise:

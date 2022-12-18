@@ -33,6 +33,11 @@ void vMbsensorsTask (void *pvParams);
 /* MQTT SENSORS TASK DEFINES */
 #define mqttTASK_STACKSIZE (configMINIMAL_STACK_SIZE * 6)
 #define mqttTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+#define mqttTOPIC "channels/1955513/publish"
+#define mqttMESSAGE                                                           \
+  "field1=%4.0f&field2=%4.1f&field3=%3.1f&field4=%d&field5=%u"
+#define BUFSIZE 100
 void vMQTTTask (void *pvParameters);
+void printFormat (char *, int, const char *, ...);
 
 #endif /* GREEN_HOUSE_TASKS_H_ */

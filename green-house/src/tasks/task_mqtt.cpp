@@ -1,29 +1,24 @@
 
 #include "green-house_tasks.h"
-#define mqttTOPIC "channels/1955513/publish"
-#define mqttMESSAGE                                                           \
-  "field1=%4.0f&field2=%4.1f&field3=%3.1f&field4=%d&field5=%u"
-#define BUFSIZE 100
-
-void printFormat (char *, int, const char *, ...);
 
 void
 vMQTTTask (void *pvParameters)
 {
   GH_DATA *dataSet = static_cast<GH_DATA *> (pvParameters);
   GH_DATA data_q;
-  mqtt mqtt;
+  //mqtt mqtt;
   char buffer[BUFSIZE];
   while (true)
     {
-      xQueueReceive(gh_data_queue, (void*)&data_q, DELAY_BETWEEN_PUBLISHES);
 
-    	printFormat (buffer, BUFSIZE, mqttMESSAGE, dataSet->co2_val,
-    	                     dataSet->rhum_val, dataSet->temp_val,
-    	                     (int)dataSet->valve_open, dataSet->set_point);
+      xSemaphoreTake(publish_signal, DELAY_BETWEEN_PUBLISHES);
+
+      printFormat (buffer, BUFSIZE, mqttMESSAGE, dataSet->co2_val,
+                   dataSet->rhum_val, dataSet->temp_val,
+                   (int)dataSet->valve_open, dataSet->set_point);
 
       std::string message = buffer;
-      mqtt.publish (mqttTOPIC, message);
+     // mqtt.publish (mqttTOPIC, message);
       printf ("%s\n", message.c_str ());
     }
 }
@@ -36,3 +31,4 @@ printFormat (char *buf, int size, const char *fmt, ...)
   vsnprintf (buf, size, fmt, args);
   va_end (args);
 }
+

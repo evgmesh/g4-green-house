@@ -10,6 +10,7 @@ overwriteGlobalGHData (GH_DATA *global, GH_DATA *local)
   global->co2_val = local->co2_val;
   global->rhum_val = local->rhum_val;
   global->temp_val = local->temp_val;
+  xSemaphoreGive(sensors_ready);
 }
 
 static void

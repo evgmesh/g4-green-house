@@ -26,6 +26,5 @@ vRelayTask (void *pvParams)
           xQueueSendToBack (action_q, (void *)&message, 0);
           xSemaphoreGive (publish_signal);
         }
-      vTaskDelay (100);
     }
 }

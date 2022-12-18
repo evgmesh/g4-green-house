@@ -17,7 +17,10 @@
 #ifndef MENU_MENUOBJ_H_
 #define MENU_MENUOBJ_H_
 
-#define EEPROM_ADDRESS 0x00000100
+#define SETPOINT_EEPROM_ADDRESS 0x00000100
+#define SETPOINT_SIZE sizeof (uint16_t)
+#define ND_EEPROM_ADDRESS ((SETPOINT_EEPROM_ADDRESS + SETPOINT_SIZE))
+#define ND_SIZE sizeof (ND)
 
 enum
 {
@@ -64,7 +67,7 @@ class MenuObj
 {
 public:
   MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm, EEPROM_Wrapper *eeprom,
-           GH_DATA *gh_display, SemaphoreHandle_t *sp_sig);
+           GH_DATA *gh_display, SemaphoreHandle_t *sp_sig, ND *network);
   virtual ~MenuObj ();
 
   /**
@@ -83,6 +86,7 @@ private:
   Counter<uint16_t> *_ppm;
   EEPROM_Wrapper *_eeprom;
   GH_DATA *_gh_display;
+  ND *_network;
   SemaphoreHandle_t *_set_point_sig;
 
   /* Methods */
@@ -93,6 +97,9 @@ private:
   void readSetPointFromEEPROM (void);
   void eraseSetPointFromEEPROM (void);
   void saveSetPointToEEPROM (void);
+  void readNetworkDataFromEEPROM (void);
+  void eraseNetworkDatFromEEPROM (void);
+  void saveNetworkDatToEEPROM (void);
 
   /** Handle the given event of the current MenuObj
    *

@@ -31,8 +31,10 @@ vDisplayTask (void *pvParams)
 {
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
+  ND network_data = {{0}, {0}};
   MenuObj menu (lcd, new Counter<uint16_t> (200, 9999, 10), &mem,
-                static_cast<GH_DATA *> (pvParams), &publish_signal);
+                static_cast<GH_DATA *> (pvParams), &publish_signal,
+                &network_data);
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)

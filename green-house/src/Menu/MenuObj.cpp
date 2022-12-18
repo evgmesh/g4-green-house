@@ -22,7 +22,7 @@ const char *MENU_OBJ_LINES[]
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
-                  SemaphoreHandle_t *sp_sig)
+                  SemaphoreHandle_t *sp_sig, ND *network)
 {
   timestamp = 0;
   _eeprom = eeprom;
@@ -30,6 +30,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _ppm = ppm;
   _gh_display = gh_display;
   _set_point_sig = sp_sig;
+  _network = network;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
 
@@ -44,12 +45,12 @@ MenuObj::~MenuObj ()
 void
 MenuObj::readSetPointFromEEPROM (void)
 {
-  uint16_t *data
-      = (uint16_t *)_eeprom->read_from (EEPROM_ADDRESS, sizeof (uint16_t));
+  uint16_t *data = (uint16_t *)_eeprom->read_from (SETPOINT_EEPROM_ADDRESS,
+                                                   SETPOINT_SIZE);
   if ((*data) > 200 && (*data) < 9999)
     {
       _ppm->setCurrent (*data);
-      _gh_display->set_point = _ppm->getCurrent();
+      _gh_display->set_point = _ppm->getCurrent ();
     }
 }
 
@@ -63,7 +64,32 @@ void
 MenuObj::saveSetPointToEEPROM (void)
 {
   uint16_t data = _ppm->getCurrent ();
-  _eeprom->write_to (EEPROM_ADDRESS, &data, sizeof (uint16_t));
+  _eeprom->write_to (SETPOINT_EEPROM_ADDRESS, &data, SETPOINT_SIZE);
+}
+
+void
+MenuObj::readNetworkDataFromEEPROM (void)
+{
+  ND *data = (ND *)_eeprom->read_from (ND_EEPROM_ADDRESS, ND_SIZE);
+  if (data->ssid[0] && data->password[0])
+    {
+      memcpy(data->ssid, _network->ssid, ND_SSID_MAX_LENGTH);
+      memcpy(data->password, _network->password, ND_PASSWORD_MAX_LENGTH);
+    }
+}
+
+void
+MenuObj::eraseNetworkDatFromEEPROM (void)
+{
+  _network->ssid[0] = 0;
+  _network->password[0] = 0;
+  saveNetworkDatToEEPROM ();
+}
+
+void
+MenuObj::saveNetworkDatToEEPROM (void)
+{
+  _eeprom->write_to (ND_EEPROM_ADDRESS, _network, ND_SIZE);
 }
 
 void
@@ -208,8 +234,8 @@ MenuObj::ObjChangePPMValue (const MenuObjEvent &event)
       SetLineToFMT (1, MENU_OBJ_LINES[SET_PPM_FOCUS], _ppm->getCurrent ());
       break;
     case MenuObjEvent::eClick:
-      _gh_display->set_point = _ppm->getCurrent();
-      xSemaphoreGive(*_set_point_sig);
+      _gh_display->set_point = _ppm->getCurrent ();
+      xSemaphoreGive (*_set_point_sig);
       SetEvent (&MenuObj::ObjSetPPM);
       break;
     case MenuObjEvent::eRollClockWise:

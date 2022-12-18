@@ -10,7 +10,6 @@
 /* global variables */
 QueueHandle_t action_q;
 SemaphoreHandle_t publish_signal;
-SemaphoreHandle_t read_sensors_signal;
 GH_DATA gh_common;
 
 void

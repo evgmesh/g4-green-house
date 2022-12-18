@@ -6,12 +6,6 @@
  */
 #include "green-house_tasks.h"
 
-static void
-idle_delay ()
-{
-  vTaskDelay (1);
-}
-
 static LiquidCrystal *
 createLCD ()
 {
@@ -35,11 +29,10 @@ createLCD ()
 void
 vDisplayTask (void *pvParams)
 {
-  GH_DATA *gh_data_display = static_cast<GH_DATA *> (pvParams);
   LiquidCrystal *lcd = createLCD ();
   EEPROM_Wrapper mem;
   MenuObj menu (lcd, new Counter<uint16_t> (200, 9999, 10), &mem,
-                gh_data_display, &publish_signal);
+                static_cast<GH_DATA *> (pvParams), &publish_signal);
 
   RotaryAction rotary_action = ROTARY_ACTION::ROTARY_IDLE;
   while (true)

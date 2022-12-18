@@ -31,6 +31,15 @@
 /* std includes */
 #include <cstring>
 
+/* Common defines */
+#define TICKRATE_HZ (10) /* 10 ticks per second */
+#define ARDUINO_SIM 1
+typedef uint8_t RotaryAction;
+#define GH_COMMON_PARAM (void *)&gh_common
+#define GH_DATA_RESET 0, 0, 0, 0, false
+#define ND_SSID_MAX_LENGTH 50
+#define ND_PASSWORD_MAX_LENGTH 100
+
 /* Common structures */
 typedef struct _green_house
 {
@@ -41,13 +50,12 @@ typedef struct _green_house
   bool valve_open;
 } GH_DATA;
 
-/* Common defines */
-#define TICKRATE_HZ (10) /* 10 ticks per second */
-#define ARDUINO_SIM 1
-typedef uint8_t RotaryAction;
-#define GH_COMMON_PARAM (void *)&gh_common
+typedef struct _nd
+{
+  char ssid[ND_SSID_MAX_LENGTH];
+  char password[ND_PASSWORD_MAX_LENGTH];
+} ND;
 
-#define GH_DATA_RESET 0, 0, 0, 0, false
 
 /* global variables */
 extern QueueHandle_t action_q;

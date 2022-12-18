@@ -6,11 +6,10 @@ vMQTTTask (void *pvParameters)
 {
   GH_DATA *dataSet = static_cast<GH_DATA *> (pvParameters);
   GH_DATA data_q;
-  //mqtt mqtt;
+  mqtt mqtt;
   char buffer[BUFSIZE];
   while (true)
     {
-
       xSemaphoreTake(publish_signal, DELAY_BETWEEN_PUBLISHES);
 
       printFormat (buffer, BUFSIZE, mqttMESSAGE, dataSet->co2_val,
@@ -18,7 +17,7 @@ vMQTTTask (void *pvParameters)
                    (int)dataSet->valve_open, dataSet->set_point);
 
       std::string message = buffer;
-     // mqtt.publish (mqttTOPIC, message);
+      mqtt.publish (mqttTOPIC, message);
       printf ("%s\n", message.c_str ());
     }
 }

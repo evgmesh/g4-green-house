@@ -7,12 +7,13 @@
 
 #include <Relay.h>
 
-Relay::Relay (GH_DATA *data, TickType_t keep_valve_closed)
+Relay::Relay (GH_DATA *data, TickType_t keep_valve_closed, float threshold)
     : r (0, 27, DigitalIoPin::output)
 {
   data_loc = data;
   last_opening = 0;
   keep_closed = keep_valve_closed;
+  th = threshold;
   r.write (false);
 }
 
@@ -22,7 +23,7 @@ bool
 Relay::peekForSetPointClosure ()
 {
   if (xSemaphoreTake (sensors_ready, 100)
-      && ((data_loc->co2_val + 50 < (float)data_loc->set_point)
+      && ((data_loc->co2_val + th < (float)data_loc->set_point)
           && (xTaskGetTickCount ()) - last_opening > keep_closed))
     {
       last_opening = xTaskGetTickCount ();

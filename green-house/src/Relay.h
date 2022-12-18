@@ -12,7 +12,7 @@
 class Relay
 {
 public:
-  Relay (GH_DATA *data, TickType_t keep_valve_closed);
+  Relay (GH_DATA *data, TickType_t keep_valve_closed, float threshold = 50);
   void open ();
   void close ();
   bool peekForSetPointClosure ();
@@ -21,6 +21,7 @@ public:
 private:
   DigitalIoPin r;
   GH_DATA *data_loc;
+  float th;
   TickType_t last_opening;
   TickType_t keep_closed;
 };

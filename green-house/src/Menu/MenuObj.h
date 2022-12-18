@@ -58,8 +58,9 @@ enum
   WAIT_1,
   WAIT_2,
   SET_NETWORK_UNFOCUS,
-  SET_NETWORK_FOCUS
-
+  SET_NETWORK_FOCUS,
+  ND_SSID,
+  ND_PASSWORD
 };
 
 class MenuObj;
@@ -86,6 +87,8 @@ private:
   LiquidCrystal *_lcd;
   char lcd_line[2][18] = { { 0 }, { 0 } };
   Counter<uint16_t> *_ppm;
+  Counter<char> symbols;
+  int char_counter;
   EEPROM_Wrapper *_eeprom;
   GH_DATA *_gh_display;
   ND *_network;
@@ -222,6 +225,18 @@ private:
    * @param event event of the state
    */
   void ObjSetNetwork (const MenuObjEvent &event);
+
+  /** Setting ssid
+   *
+   * @param event event of the state
+   */
+  void ObjSetSSID (const MenuObjEvent &event);
+
+  /** Setting passwd
+   *
+   * @param event event of the state
+   */
+  void ObjSetPASSWD (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

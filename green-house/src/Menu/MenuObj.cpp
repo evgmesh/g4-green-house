@@ -19,11 +19,13 @@ const char *MENU_OBJ_LINES[]
         " BACK TO MENU ",       "[BACK TO MENU]",  "CO2:%4.0f SP:%4d",
         "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ", " YES      [NO]",
         "[YES]      NO ",       "Launching ...",   " Moment please ",
-        " SET NETWORK ",        "[SET NETWORK]" };
+        " SET NETWORK ",        "[SET NETWORK]",   "ENTER SSID \"...\"",
+        "ENTER PASS \"...\"" };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
                   SemaphoreHandle_t *sp_sig, ND *network)
+    : symbols (33, 122, 1)
 {
   timestamp = 0;
   _eeprom = eeprom;
@@ -32,6 +34,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _gh_display = gh_display;
   _set_point_sig = sp_sig;
   _network = network;
+  char_counter = 0;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
   if (!readNetworkDataFromEEPROM ())
@@ -428,6 +431,7 @@ MenuObj::ObjSetNetwork (const MenuObjEvent &event)
       SetLineToConst (1, MENU_OBJ_LINES[SET_NETWORK_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
+    	SetEvent (&MenuObj::ObjSetSSID);
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjSetCOLevel);
@@ -436,6 +440,71 @@ MenuObj::ObjSetNetwork (const MenuObjEvent &event)
       SetEvent (&MenuObj::ObjReset);
       break;
 
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjSetSSID (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[ND_SSID]);
+      SetLineToFMT (2, "%s", _network->ssid);
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+    	if(char_counter > 15 || _network->ssid[char_counter] == '"'){
+    		SetEvent(&MenuObj::ObjSetPASSWD);
+    	}
+    	char_counter++;
+      break;
+    case MenuObjEvent::eRollClockWise:
+      symbols.inc ();
+      _network->ssid[char_counter] = symbols.getCurrent();
+      SetLineToFMT (2, "%s", _network->ssid);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      symbols.dec ();
+      _network->ssid[char_counter] = symbols.getCurrent();
+      SetLineToFMT (2, "%s", _network->ssid);
+      break;
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[ND_PASSWORD]);
+      SetLineToFMT (2, "%s", _network->password);
+      break;
+    case MenuObjEvent::eUnFocus:
+      break;
+    case MenuObjEvent::eClick:
+    	if(char_counter > 15 || _network->password[char_counter] == '"'){
+    		saveNetworkDatToEEPROM();
+    		SetEvent(&MenuObj::ObjSetCOLevel);
+    	}
+    	char_counter++;
+      break;
+    case MenuObjEvent::eRollClockWise:
+      symbols.inc ();
+      _network->password[char_counter] = symbols.getCurrent();
+      SetLineToFMT (2, "%s", _network->password);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      symbols.dec ();
+      _network->password[char_counter] = symbols.getCurrent();
+      SetLineToFMT (2, "%s", _network->password);
+      break;
     default:
       break;
     }
@@ -454,6 +523,7 @@ MenuObj::ObjHARDResetYes (const MenuObjEvent &event)
       break;
     case MenuObjEvent::eClick:
       eraseSetPointFromEEPROM ();
+      eraseNetworkDatFromEEPROM();
       SetEvent (&MenuObj::ObjReset);
       break;
     case MenuObjEvent::eRollClockWise:

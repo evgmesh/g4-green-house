@@ -21,8 +21,9 @@ Relay::~Relay () {}
 bool
 Relay::peekForSetPointClosure ()
 {
-  if ((data_loc->co2_val + 50 < (float)data_loc->set_point)
-      && (xTaskGetTickCount ()) - last_opening > keep_closed)
+  if (xSemaphoreTake (sensors_ready, 100)
+      && ((data_loc->co2_val + 50 < (float)data_loc->set_point)
+          && (xTaskGetTickCount ()) - last_opening > keep_closed))
     {
       last_opening = xTaskGetTickCount ();
       return true;

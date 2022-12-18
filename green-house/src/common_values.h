@@ -52,6 +52,7 @@ typedef uint8_t RotaryAction;
 /* global variables */
 extern QueueHandle_t action_q;
 extern SemaphoreHandle_t publish_signal;
+extern SemaphoreHandle_t sensors_ready;
 extern Rotary *rot;
 extern GH_DATA gh_common;
 

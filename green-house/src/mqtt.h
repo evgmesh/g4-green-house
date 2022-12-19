@@ -36,7 +36,6 @@ private:
 	void prvCreateMQTTConnectionWithBroker (MQTTContext_t *, NetworkContext_t *);
 	void prvMQTTProcessIncomingPublish (MQTTPublishInfo_t *);
 	PlaintextTransportStatus_t Plaintext_FreeRTOS_Connect( NetworkContext_t *,
-	                                                       const char *,
 	                                                       uint16_t, uint32_t, uint32_t);
 	void set_ssid_and_password(char *, char *);
 };

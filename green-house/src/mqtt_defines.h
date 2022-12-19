@@ -293,7 +293,6 @@ static MQTTFixedBuffer_t xBuffer
 
 
 PlaintextTransportStatus_t Plaintext_FreeRTOS_Connect( NetworkContext_t * pNetworkContext,
-                                                       const char * pHostName,
                                                        uint16_t port,
                                                        uint32_t receiveTimeoutMs,
                                                        uint32_t sendTimeoutMs,

@@ -316,10 +316,14 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
    * will ensure that the broker does not store any data when this client
    * gets disconnected. */
   xConnectInfo.cleanSession = true;
+
+
+  /* USE IT IF BROKER AUTENTIFICATION (CLOUD FOR EXAMPLE IS IN USE
   xConnectInfo.pUserName = BROKER_USER_NAME;
   xConnectInfo.userNameLength = (uint16_t)strlen (BROKER_USER_NAME);
   xConnectInfo.pPassword = BROKER_PASSWORD;
   xConnectInfo.passwordLength = (uint16_t)strlen (BROKER_PASSWORD);
+*/
 
   /* The client identifier is used to uniquely identify this MQTT client to
    * the MQTT broker. In a production device the identifier can be something

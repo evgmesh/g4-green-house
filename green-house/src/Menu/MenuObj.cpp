@@ -470,6 +470,8 @@ MenuObj::ObjSetSSID (const MenuObjEvent &event)
           SetEvent (&MenuObj::ObjSetPASSWD);
         }
       char_counter++;
+      _network->ssid[char_counter] = symbols.getCurrent ();
+      SetLineToFMT (2, "%s", _network->ssid);
       break;
     case MenuObjEvent::eRollClockWise:
       symbols.inc ();
@@ -509,6 +511,8 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
           SetEvent (&MenuObj::ObjSetCOLevel);
         }
       char_counter++;
+      _network->password[char_counter] = symbols.getCurrent ();
+      SetLineToFMT (2, "%s", _network->password);
       break;
     case MenuObjEvent::eRollClockWise:
       symbols.inc ();

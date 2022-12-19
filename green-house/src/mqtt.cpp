@@ -9,8 +9,7 @@
 
 mqtt::mqtt(char *ssid, char *password) {
 	/* Set the pParams member of the network context with desired transport. */
-	memcpy(_ssid, ssid, 16);
-	memcpy(_password, password, 16);
+  set_ssid_and_password(ssid, password);
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
 	connect();
@@ -341,6 +340,16 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
   configASSERT (xResult == MQTTSuccess);
   /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
   (void) xResult;
+}
+
+void
+mqtt::set_ssid_and_password(char *ssid, char *password)
+{
+  //Force terminate strings in the end.
+  ssid[16] = '\0';
+  password[16] = '\0';
+  memcpy(_ssid, ssid + 1, strlen(ssid + 1) - 1);
+	memcpy(_password, password + 1, strlen(password + 1) - 1);
 }
 
 static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string topic, std::string message)

@@ -11,6 +11,7 @@
 #include "mqtt_defines.h"
 #include "mqtt_config.h"
 #include "common_values.h"
+#define STRSIZE 16
 //#include "mqtt_demo/logging_stack.h"
 //#include "mqtt_demo/logging_levels.h"
 
@@ -26,9 +27,9 @@ private:
 	MQTTContext_t xMQTTContext;
 	MQTTStatus_t xMQTTStatus;
 	PlaintextTransportStatus_t xNetworkStatus;
-	char _ssid[ND_SSID_MAX_LENGTH];
-	char _password[ND_PASSWORD_MAX_LENGTH];
-	char _brokerIP[ND_IP_MAX_LENGTH];
+	char _ssid[STRSIZE];
+	char _password[STRSIZE];
+	char _brokerIP[STRSIZE];
 	/* Functions */
 	void connect();
 	PlaintextTransportStatus_t prvConnectToServerWithBackoffRetries (NetworkContext_t *);

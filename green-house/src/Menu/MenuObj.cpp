@@ -41,7 +41,11 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
     {
       current = &MenuObj::ObjSetNetwork;
     }
-  HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
+  else
+    {
+      xQueueSend (network_q, (void *)_network, 0);
+      HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
+    }
 }
 
 MenuObj::~MenuObj ()
@@ -431,7 +435,7 @@ MenuObj::ObjSetNetwork (const MenuObjEvent &event)
       SetLineToConst (1, MENU_OBJ_LINES[SET_NETWORK_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
-    	SetEvent (&MenuObj::ObjSetSSID);
+      SetEvent (&MenuObj::ObjSetSSID);
       break;
     case MenuObjEvent::eRollClockWise:
       SetEvent (&MenuObj::ObjSetCOLevel);
@@ -452,27 +456,29 @@ MenuObj::ObjSetSSID (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_SSID]);
-      symbols.setCurrent('"');
-      _network->ssid[char_counter] = symbols.getCurrent();
+      symbols.setCurrent ('"');
+      _network->ssid[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->ssid);
       break;
     case MenuObjEvent::eUnFocus:
-    	char_counter = 0;
+      char_counter = 0;
       break;
     case MenuObjEvent::eClick:
-    	if(char_counter > 15 || (_network->ssid[char_counter] == '"' && char_counter != 0)){
-    		SetEvent(&MenuObj::ObjSetPASSWD);
-    	}
-    	char_counter++;
+      if (char_counter > 15
+          || (_network->ssid[char_counter] == '"' && char_counter != 0))
+        {
+          SetEvent (&MenuObj::ObjSetPASSWD);
+        }
+      char_counter++;
       break;
     case MenuObjEvent::eRollClockWise:
       symbols.inc ();
-      _network->ssid[char_counter] = symbols.getCurrent();
+      _network->ssid[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->ssid);
       break;
     case MenuObjEvent::eRollCClockWise:
       symbols.dec ();
-      _network->ssid[char_counter] = symbols.getCurrent();
+      _network->ssid[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->ssid);
       break;
     default:
@@ -487,28 +493,31 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_PASSWORD]);
-      symbols.setCurrent('"');
-      _network->password[char_counter] = symbols.getCurrent();
+      symbols.setCurrent ('"');
+      _network->password[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->password);
       break;
     case MenuObjEvent::eUnFocus:
-    	char_counter = 0;
+      char_counter = 0;
       break;
     case MenuObjEvent::eClick:
-    	if(char_counter > 15 || (_network->ssid[char_counter] == '"' && char_counter != 0)){
-    		saveNetworkDatToEEPROM();
-    		SetEvent(&MenuObj::ObjSetCOLevel);
-    	}
-    	char_counter++;
+      if (char_counter > 15
+          || (_network->ssid[char_counter] == '"' && char_counter != 0))
+        {
+          saveNetworkDatToEEPROM ();
+          xQueueSend (network_q, (void *)_network, 0);
+          SetEvent (&MenuObj::ObjSetCOLevel);
+        }
+      char_counter++;
       break;
     case MenuObjEvent::eRollClockWise:
       symbols.inc ();
-      _network->password[char_counter] = symbols.getCurrent();
+      _network->password[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->password);
       break;
     case MenuObjEvent::eRollCClockWise:
       symbols.dec ();
-      _network->password[char_counter] = symbols.getCurrent();
+      _network->password[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->password);
       break;
     default:
@@ -529,7 +538,7 @@ MenuObj::ObjHARDResetYes (const MenuObjEvent &event)
       break;
     case MenuObjEvent::eClick:
       eraseSetPointFromEEPROM ();
-      eraseNetworkDatFromEEPROM();
+      eraseNetworkDatFromEEPROM ();
       SetEvent (&MenuObj::ObjReset);
       break;
     case MenuObjEvent::eRollClockWise:

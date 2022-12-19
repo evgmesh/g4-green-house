@@ -59,6 +59,7 @@ typedef struct _nd
 
 /* global variables */
 extern QueueHandle_t action_q;
+extern QueueHandle_t network_q;
 extern SemaphoreHandle_t publish_signal;
 extern SemaphoreHandle_t sensors_ready;
 extern Rotary *rot;

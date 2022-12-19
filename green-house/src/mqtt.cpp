@@ -7,9 +7,10 @@
 
 #include "mqtt.h"
 
-mqtt::mqtt(char *ssid, char *password) {
+mqtt::mqtt(char *ssid, char *password, char *brokerIP) {
 	/* Set the pParams member of the network context with desired transport. */
   set_ssid_and_password(ssid, password);
+  memcpy(_brokerIP, brokerIP, 16);
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
 	connect();
@@ -425,7 +426,7 @@ PlaintextTransportStatus_t mqtt::Plaintext_FreeRTOS_Connect( NetworkContext_t * 
                                         sendTimeoutMs );
 #else
         pPlaintextTransportParams->tcpSocket = esp_socket(_ssid, _password) ;
-        socketStatus = esp_connect(pPlaintextTransportParams->tcpSocket, pHostName, port);
+        socketStatus = esp_connect(pPlaintextTransportParams->tcpSocket, _brokerIP, port);
 #endif
 
         /* A non zero status is an error. */

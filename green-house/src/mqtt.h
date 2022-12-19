@@ -16,7 +16,7 @@
 
 class mqtt {
 public:
-	mqtt(char *, char *);
+	mqtt(char *, char *, char *);
 	virtual ~mqtt();
 	void publish(std::string, std::string);
 private:
@@ -28,6 +28,7 @@ private:
 	PlaintextTransportStatus_t xNetworkStatus;
 	char _ssid[16];
 	char _password[16];
+	char _brokerIP[16];
 	/* Functions */
 	void connect();
 	PlaintextTransportStatus_t prvConnectToServerWithBackoffRetries (NetworkContext_t *);

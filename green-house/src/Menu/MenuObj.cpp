@@ -20,7 +20,8 @@ const char *MENU_OBJ_LINES[]
         "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ",  " YES      [NO]",
         "[YES]      NO ",       "Launching ...",    " Moment please ",
         " SET NETWORK ",        "[SET NETWORK]",    "ENTER SSID \"...\"",
-        "ENTER PASS \"...\"",   "ENTER IP:X.X.X.X", "%3d.%3d.%3d.%3d" };
+        "ENTER PASS \"...\"",   "ENTER IP:X.X.X.X", "%d.%d.%d.%d",
+        "%3d.%3d.%3d.%3d" };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
@@ -552,8 +553,8 @@ MenuObj::ObjSetIP (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_IP]);
-      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
-                    ip_numbers[2], ip_numbers[3]);
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT_STRICT], ip_numbers[0],
+                    ip_numbers[1], ip_numbers[2], ip_numbers[3]);
       break;
     case MenuObjEvent::eUnFocus:
       SetLineToConst (1, "");
@@ -573,20 +574,20 @@ MenuObj::ObjSetIP (const MenuObjEvent &event)
         }
       char_counter++;
       ip_numbers[char_counter] = ip_digit.getCurrent ();
-      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
-                    ip_numbers[2], ip_numbers[3]);
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT_STRICT], ip_numbers[0],
+                    ip_numbers[1], ip_numbers[2], ip_numbers[3]);
       break;
     case MenuObjEvent::eRollClockWise:
       ip_digit.inc ();
       ip_numbers[char_counter] = ip_digit.getCurrent ();
-      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
-                    ip_numbers[2], ip_numbers[3]);
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT_STRICT], ip_numbers[0],
+                    ip_numbers[1], ip_numbers[2], ip_numbers[3]);
       break;
     case MenuObjEvent::eRollCClockWise:
       ip_digit.dec ();
       ip_numbers[char_counter] = ip_digit.getCurrent ();
-      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
-                    ip_numbers[2], ip_numbers[3]);
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT_STRICT], ip_numbers[0],
+                    ip_numbers[1], ip_numbers[2], ip_numbers[3]);
       break;
     default:
       break;

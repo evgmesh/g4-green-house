@@ -346,9 +346,6 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
 void
 mqtt::set_ssid_and_password(char *ssid, char *password)
 {
-  //Force terminate strings in the end.
-  ssid[ND_SSID_MAX_LENGTH] = '\0';
-  password[ND_PASSWORD_MAX_LENGTH] = '\0';
   int i = 1;
   int q = 0;
   while (i <= 16)

@@ -94,7 +94,8 @@ private:
     ND_SSID,
     ND_PASSWORD,
     ND_IP,
-    ND_IP_FMT
+    ND_IP_FMT,
+    ND_IP_FMT_STRICT
   };
 
   /* Methods */

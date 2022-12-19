@@ -37,8 +37,8 @@
 typedef uint8_t RotaryAction;
 #define GH_COMMON_PARAM (void *)&gh_common
 #define GH_DATA_RESET 0, 0, 0, 0, false
-#define ND_SSID_MAX_LENGTH 50
-#define ND_PASSWORD_MAX_LENGTH 100
+#define ND_SSID_MAX_LENGTH 16
+#define ND_PASSWORD_MAX_LENGTH 16
 
 /* Common structures */
 typedef struct _green_house

@@ -8,7 +8,7 @@ vMQTTTask (void *pvParameters)
   ND network_data = { { 0 }, { 0 } };
   xQueueReceive (network_q, (void *)&network_data, portMAX_DELAY);
 
-  mqtt mqtt;
+  mqtt mqtt(network_data.ssid, network_data.password);
   char buffer[BUFSIZE];
   while (true)
     {

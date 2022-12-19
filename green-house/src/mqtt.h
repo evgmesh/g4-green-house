@@ -36,6 +36,7 @@ private:
 	PlaintextTransportStatus_t Plaintext_FreeRTOS_Connect( NetworkContext_t *,
 	                                                       const char *,
 	                                                       uint16_t, uint32_t, uint32_t);
+	void set_ssid_and_password(char *, char *);
 };
 
 #endif /* MQTT_H_ */

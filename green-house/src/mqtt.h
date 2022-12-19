@@ -26,9 +26,9 @@ private:
 	MQTTContext_t xMQTTContext;
 	MQTTStatus_t xMQTTStatus;
 	PlaintextTransportStatus_t xNetworkStatus;
-	char _ssid[16];
-	char _password[16];
-	char _brokerIP[16];
+	char _ssid[ND_SSID_MAX_LENGTH];
+	char _password[ND_PASSWORD_MAX_LENGTH];
+	char _brokerIP[ND_IP_MAX_LENGTH];
 	/* Functions */
 	void connect();
 	PlaintextTransportStatus_t prvConnectToServerWithBackoffRetries (NetworkContext_t *);

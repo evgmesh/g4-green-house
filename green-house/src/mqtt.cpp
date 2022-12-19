@@ -10,7 +10,7 @@
 mqtt::mqtt(char *ssid, char *password, char *brokerIP) {
 	/* Set the pParams member of the network context with desired transport. */
   set_ssid_and_password(ssid, password);
-  memcpy(_brokerIP, brokerIP, 16);
+  memcpy(_brokerIP, brokerIP, ND_IP_MAX_LENGTH);
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
 	connect();
@@ -347,8 +347,8 @@ void
 mqtt::set_ssid_and_password(char *ssid, char *password)
 {
   //Force terminate strings in the end.
-  ssid[16] = '\0';
-  password[16] = '\0';
+  ssid[ND_SSID_MAX_LENGTH] = '\0';
+  password[ND_PASSWORD_MAX_LENGTH] = '\0';
   int i = 1;
   int q = 0;
   while (i <= 16)
@@ -364,8 +364,8 @@ mqtt::set_ssid_and_password(char *ssid, char *password)
     i++;
     q++;
   }
-  _ssid[16] = '\0';
-  _password[16] = '\0';
+  _ssid[ND_SSID_MAX_LENGTH - 1] = '\0';
+  _password[ND_PASSWORD_MAX_LENGTH - 1] = '\0';
 }
 
 static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string topic, std::string message)

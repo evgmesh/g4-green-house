@@ -23,8 +23,9 @@
 
 typedef int EspSocket_t;
 
-uint32_t get_ticks(void); // defined externally
-
+static inline uint32_t get_ticks(void) {
+	return xTaskGetTickCount();
+}
 
 #define I_DONT_USE(x) (void) x
 #define DEBUGP( ... ) printf( __VA_ARGS__ )

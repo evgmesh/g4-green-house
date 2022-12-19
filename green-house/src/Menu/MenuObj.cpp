@@ -34,18 +34,21 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   _gh_display = gh_display;
   _set_point_sig = sp_sig;
   _network = network;
+  memset (_network->ssid, 0x00, ND_SSID_MAX_LENGTH);
+  memset (_network->password, 0x00, ND_SSID_MAX_LENGTH);
   char_counter = 0;
   current = &MenuObj::ObjWait;
   readSetPointFromEEPROM ();
   if (!readNetworkDataFromEEPROM ())
     {
+
       current = &MenuObj::ObjSetNetwork;
     }
   else
     {
       xQueueSend (network_q, (void *)_network, 0);
-      HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
     }
+  HandleObj (MenuObjEvent (MenuObjEvent::eFocus));
 }
 
 MenuObj::~MenuObj ()
@@ -84,8 +87,8 @@ MenuObj::readNetworkDataFromEEPROM (void)
   ND *data = (ND *)_eeprom->read_from (ND_EEPROM_ADDRESS, ND_SIZE);
   if (data->ssid[0] && data->password[0])
     {
-      memcpy (data->ssid, _network->ssid, ND_SSID_MAX_LENGTH);
-      memcpy (data->password, _network->password, ND_PASSWORD_MAX_LENGTH);
+      memcpy (_network->ssid, data->ssid, ND_SSID_MAX_LENGTH);
+      memcpy (_network->password, data->password, ND_PASSWORD_MAX_LENGTH);
       return true;
     }
   return false;
@@ -94,8 +97,8 @@ MenuObj::readNetworkDataFromEEPROM (void)
 void
 MenuObj::eraseNetworkDatFromEEPROM (void)
 {
-  _network->ssid[0] = 0;
-  _network->password[0] = 0;
+  memset (_network->ssid, 0x00, ND_SSID_MAX_LENGTH);
+  memset (_network->password, 0x00, ND_SSID_MAX_LENGTH);
   saveNetworkDatToEEPROM ();
 }
 
@@ -435,6 +438,7 @@ MenuObj::ObjSetNetwork (const MenuObjEvent &event)
       SetLineToConst (1, MENU_OBJ_LINES[SET_NETWORK_UNFOCUS]);
       break;
     case MenuObjEvent::eClick:
+      eraseNetworkDatFromEEPROM ();
       SetEvent (&MenuObj::ObjSetSSID);
       break;
     case MenuObjEvent::eRollClockWise:
@@ -456,7 +460,9 @@ MenuObj::ObjSetSSID (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_SSID]);
+      _network->ssid[char_counter] = '"';
       symbols.setCurrent ('"');
+      char_counter = 1;
       _network->ssid[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->ssid);
       break;
@@ -468,6 +474,7 @@ MenuObj::ObjSetSSID (const MenuObjEvent &event)
           || (_network->ssid[char_counter] == '"' && char_counter != 0))
         {
           SetEvent (&MenuObj::ObjSetPASSWD);
+          break;
         }
       char_counter++;
       _network->ssid[char_counter] = symbols.getCurrent ();
@@ -495,20 +502,25 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_PASSWORD]);
+      _network->password[char_counter] = '"';
       symbols.setCurrent ('"');
+      char_counter = 1;
       _network->password[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->password);
       break;
     case MenuObjEvent::eUnFocus:
+      SetLineToConst (1, "");
+      SetLineToConst (2, "");
       char_counter = 0;
       break;
     case MenuObjEvent::eClick:
       if (char_counter > 15
-          || (_network->ssid[char_counter] == '"' && char_counter != 0))
+          || (_network->password[char_counter] == '"' && char_counter != 0))
         {
           saveNetworkDatToEEPROM ();
           xQueueSend (network_q, (void *)_network, 0);
           SetEvent (&MenuObj::ObjSetCOLevel);
+          break;
         }
       char_counter++;
       _network->password[char_counter] = symbols.getCurrent ();

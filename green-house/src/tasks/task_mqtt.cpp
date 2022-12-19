@@ -5,12 +5,14 @@ void
 vMQTTTask (void *pvParameters)
 {
   GH_DATA *dataSet = static_cast<GH_DATA *> (pvParameters);
-  GH_DATA data_q;
+  ND network_data = { { 0 }, { 0 } };
+  xQueueReceive (network_q, (void *)&network_data, portMAX_DELAY);
+
   mqtt mqtt;
   char buffer[BUFSIZE];
   while (true)
     {
-      xSemaphoreTake(publish_signal, DELAY_BETWEEN_PUBLISHES);
+      xSemaphoreTake (publish_signal, DELAY_BETWEEN_PUBLISHES);
 
       printFormat (buffer, BUFSIZE, mqttMESSAGE, dataSet->co2_val,
                    dataSet->rhum_val, dataSet->temp_val,
@@ -30,4 +32,3 @@ printFormat (char *buf, int size, const char *fmt, ...)
   vsnprintf (buf, size, fmt, args);
   va_end (args);
 }
-

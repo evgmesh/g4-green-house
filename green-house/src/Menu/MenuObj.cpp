@@ -8,24 +8,24 @@
 #include "MenuObj.h"
 
 const char *MENU_OBJ_LINES[]
-    = { "[SET CO2 LVL]",        " SET CO2 LVL ",   "[SHOW VALUES]",
-        " SHOW VALUES ",        "[SHOW ALL]",      " SHOW ALL",
-        "[HARD RESET]",         " HARD RESET ",    "SET [%4d] PPM",
-        "SET  %4d  PPM",        "SET <%4d> PPM",   " BACK     SAVE ",
-        "[BACK]    SAVE ",      " BACK    [SAVE]", "  CO2:%4.0f PPM ",
-        "> CO2:%4.0f PPM",      "  RH:%4.1f%\%",   "> RH:%4.1f%\%",
-        "  TEMP: %4.1f C ",     "> TEMP: %4.1f C", "  SP:%4d PPM ",
-        "> SP:%4d PPM",         "  VALVE:%s ",     "> VALVE:%s",
-        " BACK TO MENU ",       "[BACK TO MENU]",  "CO2:%4.0f SP:%4d",
-        "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ", " YES      [NO]",
-        "[YES]      NO ",       "Launching ...",   " Moment please ",
-        " SET NETWORK ",        "[SET NETWORK]",   "ENTER SSID \"...\"",
-        "ENTER PASS \"...\"" };
+    = { "[SET CO2 LVL]",        " SET CO2 LVL ",    "[SHOW VALUES]",
+        " SHOW VALUES ",        "[SHOW ALL]",       " SHOW ALL",
+        "[HARD RESET]",         " HARD RESET ",     "SET [%4d] PPM",
+        "SET  %4d  PPM",        "SET <%4d> PPM",    " BACK     SAVE ",
+        "[BACK]    SAVE ",      " BACK    [SAVE]",  "  CO2:%4.0f PPM ",
+        "> CO2:%4.0f PPM",      "  RH:%4.1f%\%",    "> RH:%4.1f%\%",
+        "  TEMP: %4.1f C ",     "> TEMP: %4.1f C",  "  SP:%4d PPM ",
+        "> SP:%4d PPM",         "  VALVE:%s ",      "> VALVE:%s",
+        " BACK TO MENU ",       "[BACK TO MENU]",   "CO2:%4.0f SP:%4d",
+        "H:%3.0f T:%3.0f V:%d", "   HARD RESET  ",  " YES      [NO]",
+        "[YES]      NO ",       "Launching ...",    " Moment please ",
+        " SET NETWORK ",        "[SET NETWORK]",    "ENTER SSID \"...\"",
+        "ENTER PASS \"...\"",   "ENTER IP:X.X.X.X", "%3d.%3d.%3d.%3d" };
 
 MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
                   EEPROM_Wrapper *eeprom, GH_DATA *gh_display,
                   SemaphoreHandle_t *sp_sig, ND *network)
-    : symbols (33, 122, 1)
+    : symbols (33, 122, 1), ip_digit (0, 255, 1)
 {
   timestamp = 0;
   _eeprom = eeprom;
@@ -85,10 +85,11 @@ bool
 MenuObj::readNetworkDataFromEEPROM (void)
 {
   ND *data = (ND *)_eeprom->read_from (ND_EEPROM_ADDRESS, ND_SIZE);
-  if (data->ssid[0] && data->password[0])
+  if (data->ssid[0] && data->password[0] && data->ip[0])
     {
       memcpy (_network->ssid, data->ssid, ND_SSID_MAX_LENGTH);
       memcpy (_network->password, data->password, ND_PASSWORD_MAX_LENGTH);
+      memcpy (_network->ip, data->ip, ND_IP_MAX_LENGTH);
       return true;
     }
   return false;
@@ -99,6 +100,7 @@ MenuObj::eraseNetworkDatFromEEPROM (void)
 {
   memset (_network->ssid, 0x00, ND_SSID_MAX_LENGTH);
   memset (_network->password, 0x00, ND_SSID_MAX_LENGTH);
+  memset (_network->ip, 0x00, ND_IP_MAX_LENGTH);
   saveNetworkDatToEEPROM ();
 }
 
@@ -171,7 +173,7 @@ MenuObj::SetLineToFMT (uint8_t line, const char *fmt, ...)
 {
   va_list args;
   va_start (args, fmt);
-  vsnprintf (lcd_line[line - 1], 17, fmt, args);
+  vsnprintf (lcd_line[line - 1], 16, fmt, args);
   va_end (args);
 }
 
@@ -439,6 +441,10 @@ MenuObj::ObjSetNetwork (const MenuObjEvent &event)
       break;
     case MenuObjEvent::eClick:
       eraseNetworkDatFromEEPROM ();
+      ip_numbers[0] = 0;
+      ip_numbers[1] = 0;
+      ip_numbers[2] = 0;
+      ip_numbers[3] = 0;
       SetEvent (&MenuObj::ObjSetSSID);
       break;
     case MenuObjEvent::eRollClockWise:
@@ -517,9 +523,7 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
       if (char_counter > 15
           || (_network->password[char_counter] == '"' && char_counter != 0))
         {
-          saveNetworkDatToEEPROM ();
-          xQueueSend (network_q, (void *)_network, 0);
-          SetEvent (&MenuObj::ObjSetCOLevel);
+          SetEvent (&MenuObj::ObjSetIP);
           break;
         }
       char_counter++;
@@ -535,6 +539,54 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
       symbols.dec ();
       _network->password[char_counter] = symbols.getCurrent ();
       SetLineToFMT (2, "%s", _network->password);
+      break;
+    default:
+      break;
+    }
+}
+
+void
+MenuObj::ObjSetIP (const MenuObjEvent &event)
+{
+  switch (event.type)
+    {
+    case MenuObjEvent::eFocus:
+      SetLineToConst (1, MENU_OBJ_LINES[ND_IP]);
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
+                    ip_numbers[2], ip_numbers[3]);
+      break;
+    case MenuObjEvent::eUnFocus:
+      SetLineToConst (1, "");
+      SetLineToConst (2, "");
+      char_counter = 0;
+      break;
+    case MenuObjEvent::eClick:
+      if (char_counter == 3)
+        {
+          snprintf (_network->ip, ND_IP_MAX_LENGTH, MENU_OBJ_LINES[ND_IP_FMT],
+                    ip_numbers[0], ip_numbers[1], ip_numbers[2],
+                    ip_numbers[3]);
+          saveNetworkDatToEEPROM ();
+          xQueueSend (network_q, (void *)_network, 0);
+          SetEvent (&MenuObj::ObjSetCOLevel);
+          break;
+        }
+      char_counter++;
+      ip_numbers[char_counter] = ip_digit.getCurrent ();
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
+                    ip_numbers[2], ip_numbers[3]);
+      break;
+    case MenuObjEvent::eRollClockWise:
+      ip_digit.inc ();
+      ip_numbers[char_counter] = ip_digit.getCurrent ();
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
+                    ip_numbers[2], ip_numbers[3]);
+      break;
+    case MenuObjEvent::eRollCClockWise:
+      ip_digit.dec ();
+      ip_numbers[char_counter] = ip_digit.getCurrent ();
+      SetLineToFMT (2, MENU_OBJ_LINES[ND_IP_FMT], ip_numbers[0], ip_numbers[1],
+                    ip_numbers[2], ip_numbers[3]);
       break;
     default:
       break;

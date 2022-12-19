@@ -452,12 +452,15 @@ MenuObj::ObjSetSSID (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_SSID]);
+      symbols.setCurrent('"');
+      _network->ssid[char_counter] = symbols.getCurrent();
       SetLineToFMT (2, "%s", _network->ssid);
       break;
     case MenuObjEvent::eUnFocus:
+    	char_counter = 0;
       break;
     case MenuObjEvent::eClick:
-    	if(char_counter > 15 || _network->ssid[char_counter] == '"'){
+    	if(char_counter > 15 || (_network->ssid[char_counter] == '"' && char_counter != 0)){
     		SetEvent(&MenuObj::ObjSetPASSWD);
     	}
     	char_counter++;
@@ -484,12 +487,15 @@ MenuObj::ObjSetPASSWD (const MenuObjEvent &event)
     {
     case MenuObjEvent::eFocus:
       SetLineToConst (1, MENU_OBJ_LINES[ND_PASSWORD]);
+      symbols.setCurrent('"');
+      _network->password[char_counter] = symbols.getCurrent();
       SetLineToFMT (2, "%s", _network->password);
       break;
     case MenuObjEvent::eUnFocus:
+    	char_counter = 0;
       break;
     case MenuObjEvent::eClick:
-    	if(char_counter > 15 || _network->password[char_counter] == '"'){
+    	if(char_counter > 15 || (_network->ssid[char_counter] == '"' && char_counter != 0)){
     		saveNetworkDatToEEPROM();
     		SetEvent(&MenuObj::ObjSetCOLevel);
     	}

@@ -353,10 +353,10 @@ mqtt::set_ssid_and_password(char *ssid, char *password)
   int i = 0;
   while (i < 16)
   {
-    if (_ssid[i] == "\"")
-      _ssid[i] = "\0";
-    if (_password[i] == "\"")
-      _password[i] = "\0";
+    if (_ssid[i] == '\"')
+      _ssid[i] = '\0';
+    if (_password[i] == '\"')
+      _password[i] = '\0';
     i++;
   }
 }

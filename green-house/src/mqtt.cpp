@@ -345,11 +345,20 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
 void
 mqtt::set_ssid_and_password(char *ssid, char *password)
 {
+  memcpy(_ssid, ssid + 1, 15);
+	memcpy(_password, password + 1, 15);
   //Force terminate strings in the end.
-  ssid[16] = '\0';
-  password[16] = '\0';
-  memcpy(_ssid, ssid + 1, strlen(ssid + 1) - 1);
-	memcpy(_password, password + 1, strlen(password + 1) - 1);
+  _ssid[16] = '\0';
+  _password[16] = '\0';
+  int i = 0;
+  while (i < 16)
+  {
+    if (_ssid[i] == "\"")
+      _ssid[i] = "\0";
+    if (_password[i] == "\"")
+      _password[i] = "\0";
+    i++;
+  }
 }
 
 static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string topic, std::string message)

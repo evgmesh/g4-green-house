@@ -47,11 +47,13 @@ private:
   char lcd_line[2][18] = { { 0 }, { 0 } };
   Counter<uint16_t> *_ppm;
   Counter<char> symbols;
+  Counter<uint8_t> ip_digit;
   int char_counter;
   EEPROM_Wrapper *_eeprom;
   GH_DATA *_gh_display;
   ND *_network;
   SemaphoreHandle_t *_set_point_sig;
+  uint8_t ip_numbers[4] = { 0, 0, 0, 0 };
   enum
   {
     CO2_FOCUS,
@@ -90,7 +92,9 @@ private:
     SET_NETWORK_UNFOCUS,
     SET_NETWORK_FOCUS,
     ND_SSID,
-    ND_PASSWORD
+    ND_PASSWORD,
+    ND_IP,
+    ND_IP_FMT
   };
 
   /* Methods */
@@ -236,6 +240,12 @@ private:
    * @param event event of the state
    */
   void ObjSetPASSWD (const MenuObjEvent &event);
+
+  /** Setting IP
+   *
+   * @param event event of the state
+   */
+  void ObjSetIP (const MenuObjEvent &event);
 };
 
 #endif /* MENU_MENUOBJ_H_ */

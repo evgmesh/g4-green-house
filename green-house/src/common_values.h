@@ -39,6 +39,7 @@ typedef uint8_t RotaryAction;
 #define GH_DATA_RESET 0, 0, 0, 0, false
 #define ND_SSID_MAX_LENGTH 16
 #define ND_PASSWORD_MAX_LENGTH 16
+#define ND_IP_MAX_LENGTH 16
 
 /* Common structures */
 typedef struct _green_house
@@ -54,8 +55,8 @@ typedef struct _nd
 {
   char ssid[ND_SSID_MAX_LENGTH];
   char password[ND_PASSWORD_MAX_LENGTH];
+  char ip[ND_IP_MAX_LENGTH];
 } ND;
-
 
 /* global variables */
 extern QueueHandle_t action_q;

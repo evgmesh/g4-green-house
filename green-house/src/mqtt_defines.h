@@ -25,9 +25,97 @@ extern "C" {
 #include "backoff_algorithm.h"
 
 /* Transport interface include. */
-#include "mqtt_demo/using_plaintext.h"
+//#include "mqtt_demo/using_plaintext.h"
 
 }
+
+
+/**************************************************/
+/******* DO NOT CHANGE the following order ********/
+/***********from using_plaintext.h*****************/
+
+/* Logging related header files are required to be included in the following order:
+ * 1. Include the header file "logging_levels.h".
+ * 2. Define LIBRARY_LOG_NAME and  LIBRARY_LOG_LEVEL.
+ * 3. Include the header file "logging_stack.h".
+ */
+
+/* Include header that defines log levels. */
+#include "mqtt_demo/logging_levels.h"
+
+/* Logging configuration for the Sockets. */
+#ifndef LIBRARY_LOG_NAME
+    #define LIBRARY_LOG_NAME     "PlaintextTransport"
+#endif
+#ifndef LIBRARY_LOG_LEVEL
+    #define LIBRARY_LOG_LEVEL    LOG_ERROR
+#endif
+
+#if 0 // Keijo: we are building for LPC1549
+/* Prototype for the function used to print to console on Windows simulator
+ * of FreeRTOS.
+ * The function prints to the console before the network is connected;
+ * then a UDP port after the network has connected. */
+extern void vLoggingPrintf( const char * pcFormatString,
+                            ... );
+
+/* Map the SdkLog macro to the logging function to enable logging
+ * on Windows simulator. */
+#ifndef SdkLog
+    #define SdkLog( message )    vLoggingPrintf message
+#endif
+#endif
+
+#include "mqtt_demo/logging_stack.h"
+
+/************ End of logging configuration ****************/
+
+/* FreeRTOS+TCP include. */
+//#include "FreeRTOS_Sockets.h"
+
+/* Transport interface include. */
+#include "transport_interface.h"
+
+
+#if 1
+/**
+ * @brief Parameters for the network context that uses FreeRTOS+TCP sockets.
+ */
+typedef struct PlaintextTransportParams
+{
+    //Socket_t tcpSocket;
+    int tcpSocket;
+} PlaintextTransportParams_t;
+
+/**
+ * @brief Plain text transport Connect / Disconnect return status.
+ */
+typedef enum PlaintextTransportStatus
+{
+    PLAINTEXT_TRANSPORT_SUCCESS = 1,           /**< Function successfully completed. */
+    PLAINTEXT_TRANSPORT_INVALID_PARAMETER = 2, /**< At least one parameter was invalid. */
+    PLAINTEXT_TRANSPORT_CONNECT_FAILURE = 3    /**< Initial connection to the server failed. */
+} PlaintextTransportStatus_t;
+
+#endif
+/******* END OF DEFINES FROM using_plaintext.h *********/
+
+
+
+// Keijo's definitions
+#define FREERTOS_INVALID_SOCKET -1
+#include "esp8266_socket.h"
+//#include "demo_config.h"
+//#include <stdlib.h>
+//uint32_t uxRand() {
+//	return rand();
+//}
+//#include "task.h"
+//uint32_t get_ticks(void) {
+//	return xTaskGetTickCount();
+//}
+
+
 
 
 /**
@@ -202,6 +290,34 @@ static topicFilterContext_t xTopicFilterContext[mqttexampleTOPIC_COUNT]
  */
 static MQTTFixedBuffer_t xBuffer
     = { .pBuffer = ucSharedBuffer, .size = mqttexampleSHARED_BUFFER_SIZE };
+
+
+PlaintextTransportStatus_t Plaintext_FreeRTOS_Connect( NetworkContext_t * pNetworkContext,
+                                                       const char * pHostName,
+                                                       uint16_t port,
+                                                       uint32_t receiveTimeoutMs,
+                                                       uint32_t sendTimeoutMs,
+													   const char * ssid,
+													   const char * password  );
+
+
+int32_t Plaintext_FreeRTOS_recv( NetworkContext_t * pNetworkContext,
+                                 void * pBuffer,
+                                 size_t bytesToRecv );
+
+/**
+ * @brief Sends data over an established TCP connection.
+ *
+ * @param[in] pNetworkContext The network context containing the TCP socket
+ * handle.
+ * @param[in] pBuffer Buffer containing the bytes to send.
+ * @param[in] bytesToSend Number of bytes to send from the buffer.
+ *
+ * @return Number of bytes sent on success; else a negative value.
+ */
+int32_t Plaintext_FreeRTOS_send( NetworkContext_t * pNetworkContext,
+                                 const void * pBuffer,
+                                 size_t bytesToSend );
 
 
 

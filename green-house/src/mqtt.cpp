@@ -6,11 +6,11 @@
  */
 
 #include "mqtt.h"
-#include "mqtt_demo/logging_stack.h"
-#include "mqtt_demo/logging_levels.h"
 
-mqtt::mqtt() {
+mqtt::mqtt(char *ssid, char *password) {
 	/* Set the pParams member of the network context with desired transport. */
+	memcpy(_ssid, ssid, 16);
+	memcpy(_password, password, 16);
 	xNetworkContext.pParams = &xPlaintextTransportParams;
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
 	connect();
@@ -67,6 +67,7 @@ void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
 uint32_t uxRand() {
 	return rand();
 }
+
 PlaintextTransportStatus_t mqtt::prvConnectToServerWithBackoffRetries (NetworkContext_t *pxNetworkContext)
 {
   PlaintextTransportStatus_t xNetworkStatus;
@@ -373,6 +374,154 @@ static void prvMQTTPublishToTopic (MQTTContext_t *pxMQTTContext, std::string top
   /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
   (void) xResult;
 }
+
+
+
+PlaintextTransportStatus_t mqtt::Plaintext_FreeRTOS_Connect( NetworkContext_t * pNetworkContext,
+                                                       const char * pHostName,
+                                                       uint16_t port,
+                                                       uint32_t receiveTimeoutMs,
+                                                       uint32_t sendTimeoutMs)
+{
+    PlaintextTransportParams_t * pPlaintextTransportParams = NULL;
+    PlaintextTransportStatus_t plaintextStatus = PLAINTEXT_TRANSPORT_SUCCESS;
+    BaseType_t socketStatus = 0;
+
+    if( ( pNetworkContext == NULL ) || ( pNetworkContext->pParams == NULL ) || ( pHostName == NULL ) )
+    {
+        LogError( ( "Invalid input parameter(s): Arguments cannot be NULL. pNetworkContext=%p, "
+                    "pHostName=%p.",
+                    pNetworkContext,
+                    pHostName ) );
+        plaintextStatus = PLAINTEXT_TRANSPORT_INVALID_PARAMETER;
+    }
+    else
+    {
+        pPlaintextTransportParams = pNetworkContext->pParams;
+        /* Establish a TCP connection with the server. */
+#if 0
+        socketStatus = Sockets_Connect( &( pPlaintextTransportParams->tcpSocket ),
+                                        pHostName,
+                                        port,
+                                        receiveTimeoutMs,
+                                        sendTimeoutMs );
+#else
+        pPlaintextTransportParams->tcpSocket = esp_socket(_ssid, _password) ;
+        socketStatus = esp_connect(pPlaintextTransportParams->tcpSocket, pHostName, port);
+#endif
+
+        /* A non zero status is an error. */
+        if( socketStatus != 0 )
+        {
+            LogError( ( "Failed to connect to %s with error %d.",
+                        pHostName,
+                        (int)socketStatus ) );
+            plaintextStatus = PLAINTEXT_TRANSPORT_CONNECT_FAILURE;
+        }
+    }
+
+    return plaintextStatus;
+}
+
+
+int32_t Plaintext_FreeRTOS_recv( NetworkContext_t * pNetworkContext,
+                                 void * pBuffer,
+                                 size_t bytesToRecv )
+{
+    PlaintextTransportParams_t * pPlaintextTransportParams = NULL;
+    int32_t socketStatus = 1;
+
+    configASSERT( ( pNetworkContext != NULL ) && ( pNetworkContext->pParams != NULL ) );
+
+    pPlaintextTransportParams = pNetworkContext->pParams;
+
+    /* The TCP socket may have a receive block time.  If bytesToRecv is greater
+     * than 1 then a frame is likely already part way through reception and
+     * blocking to wait for the desired number of bytes to be available is the
+     * most efficient thing to do.  If bytesToRecv is 1 then this may be a
+     * speculative call to read to find the start of a new frame, in which case
+     * blocking is not desirable as it could block an entire protocol agent
+     * task for the duration of the read block time and therefore negatively
+     * impact performance.  So if bytesToRecv is 1 then don't call recv unless
+     * it is known that bytes are already available. */
+#if 0
+    if( bytesToRecv == 1 )
+    {
+        socketStatus = ( int32_t ) FreeRTOS_recvcount( pPlaintextTransportParams->tcpSocket );
+    }
+
+    if( socketStatus > 0 )
+    {
+        socketStatus = FreeRTOS_recv( pPlaintextTransportParams->tcpSocket,
+                                      pBuffer,
+                                      bytesToRecv,
+                                      0 );
+    }
+#else
+#if 0
+    /* this is essentially polling which makes no sense because our read
+     * has a character count based timeout. Timeout per byte is very short
+     * and we don't have an agent task so a little wait does not impact performance.
+     * Actually AT-based ESP seems to be a bit sluggish sometimes and
+     * the mqtt stack expects longer reads to complete without timeout for
+     * messages to be handled properly so a longer wait is justified.
+     */
+    if( bytesToRecv == 1 )
+    {
+       socketStatus = esp_peek( pPlaintextTransportParams->tcpSocket );
+    }
+#endif
+    if( socketStatus > 0 )
+    {
+        socketStatus = esp_read( pPlaintextTransportParams->tcpSocket,
+                                      pBuffer,
+                                      bytesToRecv );
+    }
+#endif
+
+    return socketStatus;
+}
+
+int32_t Plaintext_FreeRTOS_send( NetworkContext_t * pNetworkContext,
+                                 const void * pBuffer,
+                                 size_t bytesToSend )
+{
+    PlaintextTransportParams_t * pPlaintextTransportParams = NULL;
+    int32_t socketStatus = 0;
+
+    configASSERT( ( pNetworkContext != NULL ) && ( pNetworkContext->pParams != NULL ) );
+
+    pPlaintextTransportParams = pNetworkContext->pParams;
+#if 0
+    socketStatus = FreeRTOS_send( pPlaintextTransportParams->tcpSocket,
+                                  pBuffer,
+                                  bytesToSend,
+                                  0 );
+#else
+    socketStatus = esp_write(pPlaintextTransportParams->tcpSocket, pBuffer, bytesToSend);
+#endif
+
+    if( socketStatus == -pdFREERTOS_ERRNO_ENOSPC )
+    {
+        /* The TCP buffers could not accept any more bytes so zero bytes were sent.
+         * This is not necessarily an error that should cause a disconnect
+         * unless it persists. */
+        socketStatus = 0;
+    }
+
+    #if ( configUSE_PREEMPTION == 0 )
+        {
+            /* FreeRTOS_send adds the packet to be sent to the IP task's queue for later processing.
+             * The packet is sent later by the IP task. When FreeRTOS is used in collaborative
+             * mode (i.e. configUSE_PREEMPTION is 0), call taskYIELD to give IP task a chance to run
+             * so that the packet is actually sent before this function returns. */
+            taskYIELD();
+        }
+    #endif
+
+    return socketStatus;
+}
+
 
 
 mqtt::~mqtt() {

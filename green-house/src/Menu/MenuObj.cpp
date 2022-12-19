@@ -166,7 +166,7 @@ MenuObj::SetEvent (obj_pointer newevent)
 inline void
 MenuObj::SetLineToConst (uint8_t line, const char *to)
 {
-  memcpy (lcd_line[line - 1], to, 16);
+  memcpy (lcd_line[line - 1], to, 17);
 }
 
 void
@@ -174,7 +174,7 @@ MenuObj::SetLineToFMT (uint8_t line, const char *fmt, ...)
 {
   va_list args;
   va_start (args, fmt);
-  vsnprintf (lcd_line[line - 1], 16, fmt, args);
+  vsnprintf (lcd_line[line - 1], 17, fmt, args);
   va_end (args);
 }
 

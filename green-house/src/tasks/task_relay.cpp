@@ -11,7 +11,7 @@
 void
 vRelayTask (void *pvParams)
 {
-  Relay valve (static_cast<GH_DATA *> (pvParams), 30000);
+  Relay valve (static_cast<GH_DATA *> (pvParams), 60000);
   TickType_t last_opening = 0;
   RotaryAction message = ROTARY_ACTION::ROTARY_IDLE;
   while (true)

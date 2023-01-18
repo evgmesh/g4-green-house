@@ -35,7 +35,7 @@ void vMbsensorsTask (void *pvParams);
 #define mqttTASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
 #define mqttTOPIC "channels/1955513/publish"
 #define mqttMESSAGE                                                           \
-  "field1=%4.0f&field2=%4.1f&field3=%3.1f&field4=%d&field5=%u"
+  "field1=%f&field2=%4.1f&field3=%3.1f&field4=%d&field5=%u"
 #define BUFSIZE 100
 void vMQTTTask (void *pvParameters);
 void printFormat (char *, int, const char *, ...);

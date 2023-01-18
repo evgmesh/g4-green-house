@@ -12,6 +12,8 @@ mqtt::mqtt(char *ssid, char *password, char *brokerIP) {
   set_ssid_and_password(ssid, password);
   memcpy(_brokerIP, brokerIP, ND_IP_MAX_LENGTH);
 	xNetworkContext.pParams = &xPlaintextTransportParams;
+	  printf ("Got from EEPROM\nSSID: %s\nPass: %s\nIP: %s\n",
+			  _ssid, _password, _brokerIP);
 	ulGlobalEntryTimeMs = prvGetTimeMs ();
 	connect();
 }
@@ -45,6 +47,8 @@ void mqtt::publish(std::string mqtt_topic, std::string mqtt_message) {
 	  xMQTTStatus = MQTT_ProcessLoop (&xMQTTContext,
 									  mqttexamplePROCESS_LOOP_TIMEOUT_MS);
 	  configASSERT (xMQTTStatus == MQTTSuccess);
+	  printf("MQTT publish status: %d\n", xMQTTStatus);
+
 
 	  /* Leave the connection idle for some time. */
 	  LogInfo (("Keeping Connection Idle...\r\n"));
@@ -91,6 +95,8 @@ PlaintextTransportStatus_t mqtt::prvConnectToServerWithBackoffRetries (NetworkCo
        * democonfigMQTT_BROKER_PORT at the top of this file. */
       LogInfo (("Create a TCP connection to %s:%d.",
                 _brokerIP, MQTT_BROKER_PORT));
+      printf("Create a TCP connection to %s:%d.",
+              _brokerIP, MQTT_BROKER_PORT);
       xNetworkStatus = Plaintext_FreeRTOS_Connect (
           pxNetworkContext, MQTT_BROKER_PORT,
           mqttexampleTRANSPORT_SEND_RECV_TIMEOUT_MS,
@@ -109,13 +115,14 @@ PlaintextTransportStatus_t mqtt::prvConnectToServerWithBackoffRetries (NetworkCo
 
           if (xBackoffAlgStatus == BackoffAlgorithmRetriesExhausted)
             {
+        	  printf("Connection to the broker failed, all attempts exhausted.");
               LogError ((
                   "Connection to the broker failed, all attempts exhausted."));
             }
           else if (xBackoffAlgStatus == BackoffAlgorithmSuccess)
             {
-              LogWarn (("Connection to the broker failed. "
-                        "Retrying connection with backoff and jitter."));
+              printf ("Connection to the broker failed. "
+                        "Retrying connection with backoff and jitter.");
               vTaskDelay (pdMS_TO_TICKS (usNextRetryBackOff));
             }
         }
@@ -222,9 +229,9 @@ prvMQTTProcessResponse (MQTTPacketInfo_t *pxIncomingPacket,
           if (xTopicFilterContext[ulTopicCount].xSubAckStatus
               != MQTTSubAckFailure)
             {
-              LogInfo (("Subscribed to the topic %s with maximum QoS %u.",
+              printf ("Subscribed to the topic %s with maximum QoS %u.",
                         xTopicFilterContext[ulTopicCount].pcTopicFilter,
-                        xTopicFilterContext[ulTopicCount].xSubAckStatus));
+                        xTopicFilterContext[ulTopicCount].xSubAckStatus);
             }
         }
 
@@ -317,12 +324,12 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
   xConnectInfo.cleanSession = true;
 
 
-  /* USE IT IF BROKER AUTENTIFICATION (CLOUD FOR EXAMPLE IS IN USE
+#if GREENHOUSEDEMO
   xConnectInfo.pUserName = BROKER_USER_NAME;
   xConnectInfo.userNameLength = (uint16_t)strlen (BROKER_USER_NAME);
   xConnectInfo.pPassword = BROKER_PASSWORD;
   xConnectInfo.passwordLength = (uint16_t)strlen (BROKER_PASSWORD);
-*/
+#endif
 
   /* The client identifier is used to uniquely identify this MQTT client to
    * the MQTT broker. In a production device the identifier can be something
@@ -342,6 +349,7 @@ void mqtt::prvCreateMQTTConnectionWithBroker (MQTTContext_t *pxMQTTContext,
   xResult = MQTT_Connect (pxMQTTContext, &xConnectInfo, NULL,
                       mqttexampleCONNACK_RECV_TIMEOUT_MS, &xSessionPresent);
   configASSERT (xResult == MQTTSuccess);
+  printf("Connetion with broker status: %d\n", xResult);
   /* getting rid of warning: warning: variable 'xResult' set but not used [-Wunused-but-set-variable] */
   (void) xResult;
 }

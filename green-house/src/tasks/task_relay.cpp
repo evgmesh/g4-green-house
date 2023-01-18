@@ -21,7 +21,7 @@ vRelayTask (void *pvParams)
           valve.open ();
           xQueueSendToBack (action_q, (void *)&message, 0);
           xSemaphoreGive (publish_signal);
-          vTaskDelay (2000);
+          vTaskDelay (10000);
           valve.close ();
           xQueueSendToBack (action_q, (void *)&message, 0);
           xSemaphoreGive (publish_signal);

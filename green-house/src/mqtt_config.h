@@ -8,7 +8,7 @@
 #ifndef MQTT_CONFIG_H_
 #define MQTT_CONFIG_H_
 
-#define GREENHOUSEDEMO 0
+#define GREENHOUSEDEMO 1
 
 #define MQTT_BROKER_PORT 1883
 #define WIFI_SSID "Network SSID"

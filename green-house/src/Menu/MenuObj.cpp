@@ -39,6 +39,7 @@ MenuObj::MenuObj (LiquidCrystal *lcd, Counter<uint16_t> *ppm,
   memset (_network->password, 0x00, ND_SSID_MAX_LENGTH);
   char_counter = 0;
   current = &MenuObj::ObjWait;
+  _ppm->setCurrent(750);
   readSetPointFromEEPROM ();
   if (!readNetworkDataFromEEPROM ())
     {

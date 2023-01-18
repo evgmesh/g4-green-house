@@ -7,7 +7,6 @@ vMQTTTask (void *pvParameters)
   GH_DATA *dataSet = static_cast<GH_DATA *> (pvParameters);
   ND network_data = { { 0 }, { 0 }, { 0 } };
   xQueueReceive (network_q, (void *)&network_data, portMAX_DELAY);
-
   mqtt mqtt(network_data.ssid, network_data.password, network_data.ip);
   char buffer[BUFSIZE];
   while (true)

@@ -6,29 +6,25 @@
 #define LOW 0
 #define HIGH 1
 
-
-#if 0
 void delayMicroseconds(unsigned int us)
 {
-	// implement with RIT
-}
-#else
-void delayMicroseconds(uint32_t delay)
-{
-	static int init;
-	if(!init) {
-		// start core clock counter
-		CoreDebug->DEMCR |= 1 << 24;
-		DWT->CTRL |= 1;
-		init = 1;
-	}
+    uint64_t cmp_value;
 
-	uint32_t start = DWT->CYCCNT;
-	delay = delay * 72; // assuming 72MHz clock
-	while(DWT->CYCCNT - start < delay);
-}
+    /* Determine approximate compare value based on clock rate and passed interval */
+    cmp_value = (uint64_t) Chip_Clock_GetSystemClockRate();
+    cmp_value = cmp_value * (uint64_t) us / 1000000;
 
-#endif
+    Chip_RIT_Disable(LPC_RITIMER); // disable timer
+    /* Set timer compare value */
+    Chip_RIT_SetCounter(LPC_RITIMER, 0);
+    Chip_RIT_SetCompareValue(LPC_RITIMER, cmp_value);
+    Chip_RIT_Enable(LPC_RITIMER); // enable timer
+
+    while(!Chip_RIT_GetIntStatus(LPC_RITIMER)) {
+    }
+    Chip_RIT_ClearIntStatus(LPC_RITIMER); //
+    Chip_RIT_Disable(LPC_RITIMER); // disable timer
+}
 
 // When the display powers up, it is configured as follows:
 //
